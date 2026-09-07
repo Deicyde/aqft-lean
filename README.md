@@ -3,12 +3,12 @@
 Foundations for algebraic quantum field theory in Lean 4, starting with
 pseudo-Riemannian manifolds and Minkowski spacetime.
 
-The long-term target is the concrete Haag–Kastler framework: a net of local von
-Neumann algebras on a common Hilbert space, with isotony, locality, Poincaré
-covariance, a vacuum, and the spectrum condition. **Isotony and causality are
-formalized**; the other AQFT axioms remain future work. The geometric foundation
-includes Lorentzian metrics, a proved Minkowski signature, and the algebraic group of
-metric-preserving diffeomorphisms.
+The target is the Haag–Kastler framework, starting with a net of local unital
+C*-algebras inside an abstract ambient C*-algebra. **Isotony and causality are
+formalized** on arbitrary Lorentzian manifolds. Covariance, states, Hilbert-space
+representations, vacuum assumptions, and the spectrum condition remain future
+work. The geometric foundation includes Lorentzian metrics, a proved Minkowski
+signature, and the algebraic group of metric-preserving diffeomorphisms.
 
 ## Implemented
 
@@ -42,9 +42,13 @@ metric-preserving diffeomorphisms.
 - `AQFT.Spacetime.Region M`: open subsets with compact closure, ordered by inclusion.
   In Minkowski space these are exactly the bounded open subsets. The empty set is
   included, and finite unions supply common upper regions.
-- `AQFT.IsotoneNet M H`: an order-preserving assignment of local
-  `VonNeumannAlgebra H` values to regions of any topological space `M`. Mathlib's
-  `OrderHom` expresses isotony directly. The local algebras form a directed family.
+- `AQFT.CStarSubalgebra B`: norm-closed unital complex star subalgebras of an
+  abstract `B` with `[CStarAlgebra B]`. Each local carrier inherits a native
+  `CStarAlgebra` instance. The relative commutant is also a closed star subalgebra
+  inside `B`.
+- `AQFT.IsotoneNet M B`: an order-preserving assignment of `CStarSubalgebra B`
+  values to regions of any topological space `M`. Mathlib's `OrderHom` expresses
+  isotony directly. The local algebras form a directed family.
 - `LorentzianMetric.CausalCurve g x y`: regular C¹ curves from `x` to `y` whose
   nonzero tangent vectors have nonpositive metric square throughout `[0,1]`.
 - `g.SpacelikeSeparated`: the sets are disjoint and no regular causal curve connects
@@ -53,8 +57,9 @@ metric-preserving diffeomorphisms.
 - `MinkowskiSpace.SpacelikeSeparated`: the coordinate criterion that every
   cross-set displacement has strictly positive Minkowski square. This is proved
   equivalent to separation by the Minkowski Lorentzian metric, using causal curves.
-- `A.IsCausal g`: operators in local algebras of regions separated by `g` commute.
-  This is proved equivalent to commutant inclusion and to `a*b - b*a = 0`.
+- `A.IsCausal g`: elements of local algebras of regions separated by `g` commute
+  in `B`. This is proved equivalent to relative commutant inclusion and to
+  `a*b - b*a = 0`.
 
 Minkowski space has default instances of these manifold classes. The explicit
 metric structures serve as constructors: `g.toBundle` installs a chosen metric
@@ -74,8 +79,8 @@ example : IsLorentzianManifold
 noncomputable example : Group (LorentzianIsometryGroup
     𝓘(ℝ, MinkowskiSpace 3) (MinkowskiSpace 3)) := inferInstance
 
-example {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
-    [CompleteSpace H] (A : IsotoneNet (MinkowskiSpace 3) H) {O₁ O₂ : Region (MinkowskiSpace 3)}
+example {B : Type*} [CStarAlgebra B] (A : IsotoneNet (MinkowskiSpace 3) B)
+    {O₁ O₂ : Region (MinkowskiSpace 3)}
     (h : O₁ ≤ O₂) : A O₁ ≤ A O₂ :=
   A.monotone h
 
@@ -83,23 +88,25 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {Hₘ : Type*} [TopologicalSpace Hₘ] {I : ModelWithCorners ℝ E Hₘ}
     {M : Type*} [TopologicalSpace M] [ChartedSpace Hₘ M]
     [FiniteDimensional ℝ E] [IsManifold I ∞ M]
-    {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
-    (g : LorentzianMetric I M) {A : IsotoneNet M H} (hA : A.IsCausal g)
+    {B : Type*} [CStarAlgebra B]
+    (g : LorentzianMetric I M) {A : IsotoneNet M B} (hA : A.IsCausal g)
     {O₁ O₂ : Region M} (h : g.SpacelikeSeparated (O₁ : Set M) O₂)
-    {a b : H →L[ℂ] H} (ha : a ∈ A O₁) (hb : b ∈ A O₂) :
+    {a b : B} (ha : a ∈ A O₁) (hb : b ∈ A O₂) :
     a * b - b * a = 0 :=
   sub_eq_zero.mpr (hA h ha hb).eq
 ```
 
-Both orders in the isotony example are inclusion. Every algebra acts on the same
-complex Hilbert space `H`. Regions use compact closure in the manifold topology;
-a Lorentzian metric supplies no norm or bornology. Isotony alone does not prescribe
-the algebra of the empty region or impose causality, covariance, or a vacuum condition.
+Both orders in the isotony example are inclusion. Every local algebra is a
+norm-closed subalgebra of the same abstract `B`, sharing its unit and scalar
+inclusion. No Hilbert space or representation is needed. The definition does not
+require the local algebras to generate all of `B` or prescribe the algebra of the
+empty region. Regions use compact closure in the manifold topology; a Lorentzian
+metric supplies no norm or bornology.
 
 For an arbitrary Lorentzian metric `g : LorentzianMetric I M`, use
-`A : IsotoneNet M H` and `A.IsCausal g`. With installed Lorentzian manifold instances,
+`A : IsotoneNet M B` and `A.IsCausal g`. With installed Lorentzian manifold instances,
 take `g := LorentzianMetric.ofManifold I M`. In Minkowski space, use
-`A : IsotoneNet (MinkowskiSpace n) H` and `A.IsCausal (MinkowskiSpace.lorentzianMetric n)`.
+`A : IsotoneNet (MinkowskiSpace n) B` and `A.IsCausal (MinkowskiSpace.lorentzianMetric n)`.
 No coordinates or subtraction of manifold points enter the general definition.
 `IsotoneNet.isCausal_minkowski_iff` recovers the original displacement formulation.
 
@@ -110,6 +117,10 @@ direction. Equivalence with piecewise C¹ or Lipschitz curve conventions is not 
 formalized. The empty region is separated from every region, so its observables
 commute with every local algebra; this does not by itself identify its algebra
 with the scalars.
+
+States and GNS representations can later realize these observables as operators
+on Hilbert spaces. Constructing the represented nets and their local von Neumann
+algebras requires additional results; it is not part of the current net definition.
 
 All committed proofs are complete. There are no proof placeholders or added axioms.
 CI builds with warnings treated as errors and audits dependencies on axioms.
@@ -175,6 +186,6 @@ See [the roadmap](docs/roadmap.md) for the remaining geometry and AQFT work, and
 - [Bunk, MacManus, and Schenkel, Lorentzian bordisms in algebraic quantum field theory, §2.1](https://doi.org/10.1007/s11005-025-01906-3),
   for causal curves and separation of regions on Lorentzian manifolds.
 - [Brunetti, Fredenhagen, and Verch, The Generally Covariant Locality Principle, §2](https://arxiv.org/abs/math-ph/0112041),
-  for a possible later curved-spacetime extension.
+  for a later locally covariant formulation using spacetime embeddings.
 
 Licensed under Apache 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
