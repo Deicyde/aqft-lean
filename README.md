@@ -6,15 +6,22 @@ pseudo-Riemannian manifolds and Minkowski spacetime.
 The long-term target is the concrete Haag–Kastler framework: a net of local von
 Neumann algebras on a common Hilbert space, with isotony, locality, Poincaré
 covariance, a vacuum, and the spectrum condition. These AQFT axioms are **not yet
-formalized**. The first contribution establishes the metric definition and a
-working flat example.
+formalized**. The geometric foundation now includes Lorentzian metrics, a proved
+Minkowski signature, and the algebraic group of metric-preserving diffeomorphisms.
 
 ## Implemented
 
+- `PseudoInnerProductSpace` supplies a continuous symmetric nondegenerate pairing
+  on each fiber, allowing indefinite signature. `PseudoRiemannianBundle` installs the
+  family without changing any fiber's topology or auxiliary norm.
+- `IsPseudoRiemannianManifold` records smoothness of those installed tangent
+  pairings. `IsLorentzianManifold` adds index one, following Mathlib's separation of
+  fiber data and geometric properties.
 - `AQFT.PseudoRiemannianMetric`: smooth symmetric nondegenerate bilinear forms on
   the tangent bundle of a finite-dimensional smooth real manifold. Smoothness uses
   Mathlib's bilinear Hom bundle and its coordinate changes.
 - Nondegeneracy lemmas and injectivity of pairing with the metric.
+- Smooth evaluation of the metric on smooth vector fields.
 - `PseudoRiemannianMetric.ofBilinearForm`: a constant smooth metric from any
   symmetric nondegenerate continuous bilinear form.
 - `AQFT.Spacetime.MinkowskiSpace n`: one time coordinate and `n` spatial coordinates,
@@ -22,6 +29,33 @@ working flat example.
 - `MinkowskiSpace.metric n`: the resulting smooth pseudo-Riemannian metric.
 - Negative time squares, positive spatial unit squares, and an explicit nonzero
   null vector in dimension `1+1`.
+- `AQFT.LorentzianMetric`: a smooth metric with negative index one at every point,
+  using Mathlib's `sigNeg`. The positive and negative signatures sum to the model
+  dimension.
+- `MinkowskiSpace.lorentzianMetric n`: Minkowski space as a Lorentzian example,
+  with exactly one negative and `n` positive directions.
+- `PseudoRiemannianMetric.Isometry g h`: a diffeomorphism whose derivative preserves
+  the tangent metric. Self-isometries form a group under composition.
+- Minkowski translations and time reversal as explicit metric isometries.
+
+Minkowski space has default instances of these manifold classes. The explicit
+metric structures serve as constructors: `g.toBundle` installs a chosen metric
+locally, and `PseudoRiemannianMetric.ofBundle` recovers it from the fiber instances.
+`LorentzianIsometryGroup I M` is the isometry group of the installed Lorentzian
+structure.
+
+For example, after `import AQFT`:
+
+```lean
+open Manifold AQFT AQFT.Spacetime
+open scoped Bundle
+
+example : IsLorentzianManifold
+    𝓘(ℝ, MinkowskiSpace 3) (MinkowskiSpace 3) := inferInstance
+
+example : Group (LorentzianIsometryGroup
+    𝓘(ℝ, MinkowskiSpace 3) (MinkowskiSpace 3)) := inferInstance
+```
 
 All committed proofs are complete. There are no proof placeholders or added axioms.
 CI builds with warnings treated as errors and audits dependencies on axioms.
@@ -42,15 +76,30 @@ dependency commits. Start a Lean file with `import AQFT`.
 
 ## Geometry conventions
 
+The construction follows [Mathlib's Riemannian manifold and bundle API](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Riemannian/Basic.html#IsRiemannianManifold).
+Here the fiber pairing is indefinite, as in semi-Riemannian geometry. Mathlib's
+`PreInnerProductSpace.Core` requires nonnegative squares and cannot model a
+Lorentzian fiber. We therefore use a distinct `pseudoInner` operation that can
+coexist with the auxiliary Euclidean inner product.
+
 We use the Lorentzian sign convention `(-,+,…,+)`. The auxiliary norm on the model
 space supplies its usual topology; the physical metric is a separate, indefinite
 bilinear form. A nonzero vector can have zero metric square.
 
-The general metric definition imposes no global signature. Specifying a fixed index
-and proving the Minkowski index is one are the next steps. The metric API permits
-Mathlib models with corners; later spacetime definitions should require manifolds
-without boundary, Hausdorffness, and second countability. These extra topological
-assumptions are not needed merely to define a metric.
+The general pseudo-Riemannian metric definition imposes no global signature;
+`LorentzianMetric` requires index one everywhere. The metric API permits Mathlib
+models with corners. Use a boundaryless model, Hausdorffness, and second countability
+when describing a Lorentzian manifold without boundary. Minkowski space has all
+these properties. The index-one convention also permits dimension one; applications
+requiring spatial directions should impose dimension at least two.
+
+The isometry group is currently an algebraic group. Its topology, Lie group
+structure, and the proper orthochronous Poincaré subgroup remain future work. The
+full group includes translations and time reversal; no time orientation is fixed.
+
+Mathlib's `IsRiemannianManifold` additionally relates the metric to an extended
+distance obtained from path lengths. That distance condition is not carried over
+to the indefinite setting.
 
 See [the roadmap](docs/roadmap.md) for the remaining geometry and AQFT work, and
 [the Mathlib audit](docs/mathlib-audit.md) for existing APIs and their limitations.
