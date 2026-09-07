@@ -29,14 +29,14 @@ instance (n : ℕ) : IsPseudoRiemannianManifold 𝓘(ℝ, MinkowskiSpace n) (Min
 
 /-- Minkowski space is a Lorentzian manifold with its installed tangent pairings. -/
 instance (n : ℕ) : IsLorentzianManifold 𝓘(ℝ, MinkowskiSpace n) (MinkowskiSpace n) :=
-  ⟨metric_index n⟩
+  ⟨metric_sigNeg n⟩
 
 /-- The installed Minkowski tangent pairings have ordered signature $(1,k)$. -/
 @[simp] theorem ofBundle_signature (k : ℕ) (x : MinkowskiSpace k) :
-    (PseudoRiemannianMetric.ofBundle 𝓘(ℝ, MinkowskiSpace k) (MinkowskiSpace k)).signature x =
-      (1, k) := by
-  change (metric k).signature x = (1, k)
-  exact metric_signature k x
+    let Q := (PseudoRiemannianMetric.ofBundle 𝓘(ℝ, MinkowskiSpace k)
+      (MinkowskiSpace k)).quadraticForm x
+    (sigNeg Q, sigPos Q) = (1, k) :=
+  metric_signature k x
 
 /-- The installed tangent pairing is the Minkowski bilinear form. -/
 @[simp] theorem pseudoInner_apply (n : ℕ) (x : MinkowskiSpace n)
