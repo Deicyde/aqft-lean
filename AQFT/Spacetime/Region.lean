@@ -75,6 +75,43 @@ instance : SemilatticeSup (Region M) where
 theorem exists_upper_bound (U V : Region M) : ∃ W : Region M, U ≤ W ∧ V ≤ W :=
   ⟨U ⊔ V, le_sup_left, le_sup_right⟩
 
+variable {N : Type*} [TopologicalSpace N] {P : Type*} [TopologicalSpace P]
+
+/-- A homeomorphism transports a region by taking its image. -/
+def map (f : M ≃ₜ N) (U : Region M) : Region N :=
+  ⟨⟨f '' (U : Set M), f.isOpenMap _ U.isOpen⟩, by
+    change IsCompact (closure (f '' (U : Set M)))
+    rw [← f.image_closure]
+    exact U.isCompact_closure.image f.continuous⟩
+
+@[simp] theorem coe_map (f : M ≃ₜ N) (U : Region M) :
+    (map f U : Set N) = f '' (U : Set M) := rfl
+
+@[simp] theorem map_refl (U : Region M) : map (Homeomorph.refl M) U = U := by
+  apply SetLike.coe_injective
+  exact Set.image_id _
+
+/-- Successive changes of coordinates transport regions by the composite map. -/
+theorem map_trans (f : M ≃ₜ N) (h : N ≃ₜ P) (U : Region M) :
+    map (f.trans h) U = map h (map f U) := by
+  apply SetLike.coe_injective
+  exact (Set.image_image h f (U : Set M)).symm
+
+/-- Transport of regions preserves and reflects inclusion. -/
+def mapOrderIso (f : M ≃ₜ N) : Region M ≃o Region N where
+  toFun := map f
+  invFun := map f.symm
+  left_inv U := by
+    apply SetLike.coe_injective
+    exact f.toEquiv.left_inv.image_image _
+  right_inv U := by
+    apply SetLike.coe_injective
+    exact f.toEquiv.right_inv.image_image _
+  map_rel_iff' := Set.image_subset_image_iff f.injective
+
+@[simp] theorem mapOrderIso_apply (f : M ≃ₜ N) (U : Region M) :
+    mapOrderIso f U = map f U := rfl
+
 end Topological
 
 section PseudoMetric

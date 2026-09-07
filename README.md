@@ -4,11 +4,12 @@ Foundations for algebraic quantum field theory in Lean 4, starting with
 pseudo-Riemannian manifolds and Minkowski spacetime.
 
 The target is the Haag–Kastler framework, starting with a net of local unital
-C*-algebras inside an abstract ambient C*-algebra. **Isotony and causality are
-formalized** on arbitrary Lorentzian manifolds. Covariance, states, Hilbert-space
-representations, vacuum assumptions, and the spectrum condition remain future
-work. The geometric foundation includes Lorentzian metrics, a proved Minkowski
-signature, and the algebraic group of metric-preserving diffeomorphisms.
+C*-algebras inside an abstract ambient C*-algebra. **Isotony, causality, and
+isometry covariance are formalized** on Lorentzian manifolds. Covariance adds a
+faithful Hilbert-space representation of the abstract algebra and a strongly
+continuous unitary representation of the metric self-isometries. States, vacuum
+assumptions, and the spectrum condition remain future work. The geometric
+foundation includes Lorentzian metrics and a proved Minkowski signature.
 
 ## Implemented
 
@@ -37,11 +38,14 @@ signature, and the algebraic group of metric-preserving diffeomorphisms.
 - `MinkowskiSpace.lorentzianMetric n`: Minkowski space as a Lorentzian example,
   with exactly one negative and `n` positive directions.
 - `PseudoRiemannianMetric.Isometry g h`: a diffeomorphism whose derivative preserves
-  the tangent metric. Self-isometries form a group under composition.
+  the tangent metric. Self-isometries form a group under composition, with the
+  topology induced by compact-open convergence of the maps and their inverses.
+  On locally compact manifolds, the group operations and evaluation are continuous.
 - Minkowski translations and time reversal as explicit metric isometries.
 - `AQFT.Spacetime.Region M`: open subsets with compact closure, ordered by inclusion.
   In Minkowski space these are exactly the bounded open subsets. The empty set is
-  included, and finite unions supply common upper regions.
+  included, and finite unions supply common upper regions. Homeomorphisms map
+  regions to regions, giving an action of the self-isometry group.
 - `AQFT.CStarSubalgebra B`: norm-closed unital complex star subalgebras of an
   abstract `B` with `[CStarAlgebra B]`. Each local carrier inherits a native
   `CStarAlgebra` instance. The relative commutant is also a closed star subalgebra
@@ -60,6 +64,12 @@ signature, and the algebraic group of metric-preserving diffeomorphisms.
 - `A.IsCausal g`: elements of local algebras of regions separated by `g` commute
   in `B`. This is proved equivalent to relative commutant inclusion and to
   `a*b - b*a = 0`.
+- `UnitaryRepresentation G H`: a unitary group representation with strong
+  continuity, meaning that `f ↦ U(f) ψ` is continuous for each vector `ψ`.
+- `IsotoneNet.CovariantRepresentation A g H`: a faithful unital star representation
+  `π` of `B` on `H` and a strongly continuous unitary representation `U` of the
+  self-isometry group, satisfying `π(A(f • O)) = U(f) π(A(O)) U(f)*`.
+  `A.IsCovariant g H` states that such data exist on the supplied Hilbert space.
 
 Minkowski space has default instances of these manifold classes. The explicit
 metric structures serve as constructors: `g.toBundle` installs a chosen metric
@@ -118,9 +128,22 @@ formalized. The empty region is separated from every region, so its observables
 commute with every local algebra; this does not by itself identify its algebra
 with the scalars.
 
-States and GNS representations can later realize these observables as operators
-on Hilbert spaces. Constructing the represented nets and their local von Neumann
-algebras requires additional results; it is not part of the current net definition.
+Covariance is a separate condition on the abstract net. It chooses a faithful
+representation on a complete complex Hilbert space `H`; `H` is not a parameter of
+`IsotoneNet`. The covariance equation is equality of sets of represented local
+elements. Strong continuity is continuity on each vector, with no operator-norm
+continuity requirement. Since local algebras need not generate `B`, the equation
+does not assert that unitary conjugation preserves the image of all of `B`.
+
+The symmetry group is the full metric self-isometry group, as requested. In
+Minkowski space this includes time reversal. Requiring unitary implementation of
+the full group is a stronger symmetry convention than covariance under the
+identity component used in [Fewster and Rejzner, §4.1](https://arxiv.org/abs/1904.04051).
+Orientation restrictions and antiunitary symmetries remain separate extensions;
+no vacuum or positive-energy condition is imposed here.
+
+Constructing representations from chosen states with Mathlib's GNS API, and
+passing to local von Neumann algebras, remain additional work.
 
 All committed proofs are complete. There are no proof placeholders or added axioms.
 CI builds with warnings treated as errors and audits dependencies on axioms.
@@ -162,9 +185,11 @@ when describing a Lorentzian manifold without boundary. Minkowski space has all
 these properties. The index-one convention also permits dimension one; applications
 requiring spatial directions should impose dimension at least two.
 
-The isometry group is currently an algebraic group. Its topology, Lie group
-structure, and the proper orthochronous Poincaré subgroup remain future work. The
-full group includes translations and time reversal; no time orientation is fixed.
+The self-isometry topology uses the compact-open topologies on both maps and
+inverses. Its topological group laws and continuous action use local compactness
+of the manifold. Its Lie group structure and orientation-preserving subgroups
+remain future work. The full group includes translations and time reversal;
+no time orientation is fixed.
 
 Mathlib's `IsRiemannianManifold` additionally relates the metric to an extended
 distance obtained from path lengths. That distance condition is not carried over

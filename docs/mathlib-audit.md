@@ -33,15 +33,39 @@ and
 
 ## Representations, operator algebras, and continuity
 
-The following APIs support later representations of the abstract net. They are
+The following APIs support Hilbert-space representations of the abstract net. They are
 not prerequisites for its isotony or causality definitions.
 
 | Area | Existing support | Project use |
 | --- | --- | --- |
+| Unitary operators and conjugation | `LinearIsometryEquiv`, `Unitary.linearIsometryEquiv`, `Unitary.conjStarAlgAut` | Supply unitary group laws and conjugation of represented local algebras. |
 | Weak operator topology | `ContinuousLinearMapWOT`, written `E →WOT[ℂ] F` | Express weak continuity by matrix coefficients. |
 | Strong operator topology | `PointwiseConvergenceCLM`, written `E →Lₚₜ[ℂ] F` | Express strong continuity by continuity of every orbit map. |
 | GNS construction | `PositiveLinearMap.GNS`, `gnsStarAlgHom`, `gnsNonUnitalStarAlgHom` | Reuse the Hilbert space and representation induced by a positive functional. |
 | Von Neumann algebras | `WStarAlgebra`, `VonNeumannAlgebra H`, `VonNeumannAlgebra.commutant` | Use for later represented local algebras and their operator commutants. |
+
+For a topological group `G`, `AQFT.UnitaryRepresentation G H` extends a homomorphism
+`G →* (H ≃ₗᵢ[ℂ] H)` with the condition
+`∀ v : H, Continuous (fun g ↦ U g v)`. These are continuous vector orbits, so
+the representation is strongly continuous without requiring operator-norm
+continuity. The Hilbert space belongs to this additional representation data;
+`IsotoneNet M B` remains a net in an abstract C*-algebra.
+
+Mathlib's `Unitary.linearIsometryEquiv` identifies unitary bounded operators with
+linear isometric equivalences as groups. Composing its inverse with
+`Unitary.conjStarAlgAut` defines `UnitaryRepresentation.conjugation`, a group
+homomorphism into star-algebra automorphisms of `H →L[ℂ] H`. It agrees with
+`LinearIsometryEquiv.conjStarAlgEquiv` and sends `T` to `U(g) T U(g)*`.
+The operator formula, multiplication law, and inverse law are proved in
+`AQFT/Representation/Unitary.lean`. See
+[InnerProductSpace/Adjoint.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Analysis/InnerProductSpace/Adjoint.lean)
+and
+[UnitaryStarAlgAut.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Algebra/Star/UnitaryStarAlgAut.lean).
+
+Mathlib's `ContRepresentation` does not impose continuity in the group
+variable. It bundles a homomorphism into continuous linear maps, so it cannot
+replace the vector-orbit condition above. See
+[RepresentationTheory/Continuous/Basic.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/RepresentationTheory/Continuous/Basic.lean).
 
 For Hilbert-space-valued operators,
 `ContinuousLinearMapWOT.continuous_iff` identifies continuity of `T` into the weak
@@ -131,6 +155,7 @@ Minkowski pairing separate from the auxiliary positive-definite structures used
 to give model vector spaces their topology.
 
 The checked dependencies of `PositiveLinearMap.gnsStarAlgHom`,
-`ContinuousLinearMapWOT.continuous_iff`, and
-`VonNeumannAlgebra.commutant_commutant` use only `propext`, `Classical.choice`, and
-`Quot.sound`, as reported by `#print axioms`.
+`ContinuousLinearMapWOT.continuous_iff`, `VonNeumannAlgebra.commutant_commutant`,
+and the project's unitary representation instances and conjugation declarations
+use only `propext`, `Classical.choice`, and `Quot.sound`, as reported by
+`#print axioms`.
