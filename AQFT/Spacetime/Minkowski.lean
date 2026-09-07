@@ -24,11 +24,26 @@ noncomputable section
 namespace AQFT.Spacetime
 
 /-- Minkowski space with one time coordinate and `n` spatial coordinates. -/
-abbrev MinkowskiSpace (n : ℕ) := ℝ × EuclideanSpace ℝ (Fin n)
+def MinkowskiSpace (n : ℕ) := ℝ × EuclideanSpace ℝ (Fin n)
 
 namespace MinkowskiSpace
 
 variable {n : ℕ}
+
+instance : NormedAddCommGroup (MinkowskiSpace n) :=
+  inferInstanceAs (NormedAddCommGroup (ℝ × EuclideanSpace ℝ (Fin n)))
+
+instance : NormedSpace ℝ (MinkowskiSpace n) :=
+  inferInstanceAs (NormedSpace ℝ (ℝ × EuclideanSpace ℝ (Fin n)))
+
+instance : FiniteDimensional ℝ (MinkowskiSpace n) :=
+  inferInstanceAs (FiniteDimensional ℝ (ℝ × EuclideanSpace ℝ (Fin n)))
+
+instance : CompleteSpace (MinkowskiSpace n) :=
+  inferInstanceAs (CompleteSpace (ℝ × EuclideanSpace ℝ (Fin n)))
+
+instance : SecondCountableTopology (MinkowskiSpace n) :=
+  inferInstanceAs (SecondCountableTopology (ℝ × EuclideanSpace ℝ (Fin n)))
 
 /-- The Minkowski form with negative time and positive spatial signs. -/
 def bilinearForm (n : ℕ) : MinkowskiSpace n →L[ℝ] MinkowskiSpace n →L[ℝ] ℝ :=
@@ -42,7 +57,8 @@ def bilinearForm (n : ℕ) : MinkowskiSpace n →L[ℝ] MinkowskiSpace n →L[�
 @[simp]
 theorem bilinearForm_apply (v w : MinkowskiSpace n) :
     bilinearForm n v w = -(v.1 * w.1) + inner ℝ v.2 w.2 := by
-  simp [bilinearForm, mul_comm]
+  change -(inner ℝ v.1 w.1) + inner ℝ v.2 w.2 = _
+  simp [mul_comm]
 
 /-- The Minkowski form is jointly continuous. -/
 theorem continuous_bilinearForm (n : ℕ) :
@@ -59,10 +75,14 @@ theorem bilinearForm_symm (v w : MinkowskiSpace n) :
 theorem eq_zero_of_forall_bilinearForm_eq_zero (v : MinkowskiSpace n)
     (h : ∀ w, bilinearForm n v w = 0) : v = 0 := by
   have ht : v.1 = 0 := by
-    simpa using h (1, 0)
+    have hw := h (1, 0)
+    erw [bilinearForm_apply] at hw
+    simpa using hw
   have hx : v.2 = 0 := by
     apply (inner_self_eq_zero (𝕜 := ℝ)).mp
-    simpa using h (0, v.2)
+    have hw := h (0, v.2)
+    erw [bilinearForm_apply] at hw
+    simpa using hw
   exact Prod.ext ht hx
 
 /-- The algebraic bilinear form underlying the Minkowski form is nondegenerate. -/
@@ -81,12 +101,14 @@ theorem bilinearForm_nondegenerate (n : ℕ) :
 @[simp]
 theorem bilinearForm_time_time (t : ℝ) :
     bilinearForm n (t, 0) (t, 0) = -(t ^ 2) := by
+  erw [bilinearForm_apply]
   simp [pow_two]
 
 /-- A pure spatial vector has square equal to its Euclidean norm squared. -/
 @[simp]
 theorem bilinearForm_space_space (x : EuclideanSpace ℝ (Fin n)) :
     bilinearForm n (0, x) (0, x) = ‖x‖ ^ 2 := by
+  erw [bilinearForm_apply]
   simp
 
 /-- A unit time vector has negative square. -/
@@ -104,11 +126,12 @@ def nullVector : MinkowskiSpace 1 := (1, EuclideanSpace.single 0 1)
 
 theorem nullVector_ne_zero : nullVector ≠ 0 := by
   intro h
-  have := congrArg Prod.fst h
-  simp [nullVector] at this
+  have : (1 : ℝ) = 0 := congrArg Prod.fst h
+  norm_num at this
 
 @[simp]
 theorem bilinearForm_nullVector : bilinearForm 1 nullVector nullVector = 0 := by
+  rw [bilinearForm_apply]
   simp [nullVector]
 
 end MinkowskiSpace

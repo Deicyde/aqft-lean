@@ -94,13 +94,15 @@ theorem timeReversal_apply (x : MinkowskiSpace n) : timeReversal n x = (-x.1, x.
 theorem timeReversal_mul_self (n : ℕ) : timeReversal n * timeReversal n = 1 := by
   apply PseudoRiemannianMetric.Isometry.ext
   intro x
-  simp
+  change (- -x.1, x.2) = x
+  exact Prod.ext (neg_neg x.1) rfl
 
 /-- Time reversal is a nonidentity element of the full isometry group. -/
 theorem timeReversal_ne_one (n : ℕ) : timeReversal n ≠ 1 := by
   intro h
   have ht := congrArg (fun f : PseudoRiemannianMetric.Isometry (metric n) (metric n) ↦
     (f (1, 0)).1) h
+  change (-1 : ℝ) = 1 at ht
   norm_num at ht
 
 end AQFT.Spacetime.MinkowskiSpace

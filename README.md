@@ -30,8 +30,8 @@ Minkowski signature, and the algebraic group of metric-preserving diffeomorphism
 - Negative time squares, positive spatial unit squares, and an explicit nonzero
   null vector in dimension `1+1`.
 - `AQFT.LorentzianMetric`: a smooth metric with negative index one at every point,
-  using Mathlib's `sigNeg`. Its signature is proved to be `(1, n−1)` for total
-  dimension `n`, with the pair ordered as (negative, positive). This signature
+  using Mathlib's `sigNeg` and `sigPos` directly. Its signature is proved to be
+  `(1, n−1)` for total dimension `n`, with the pair ordered as (negative, positive). This signature
   condition is proved equivalent to the metric and manifold index-one definitions.
 - `MinkowskiSpace.lorentzianMetric n`: Minkowski space as a Lorentzian example,
   with exactly one negative and `n` positive directions.

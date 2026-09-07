@@ -14,8 +14,8 @@ Completed:
   compatibility condition.
 - Constant metrics and smooth evaluation on vector fields.
 - An index-one Lorentzian metric definition using Mathlib's `sigNeg`.
-- An explicit `(negative, positive)` signature API, with the metric and manifold
-  conditions proved equivalent to signature `(1,n−1)` in total dimension `n`.
+- Metric and manifold conditions proved equivalent to signature `(1,n−1)` in total
+  dimension `n`, using Mathlib's `sigNeg` and `sigPos` directly.
 - The Minkowski signature: one negative and `n` positive directions, including
   `n = 0`, and the resulting smooth Lorentzian metric.
 - Metric-preserving diffeomorphisms, their identity/composition/inverse laws, and
