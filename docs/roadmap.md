@@ -36,15 +36,18 @@ but are not prerequisites for a first AQFT net on explicit Minkowski space.
 
 ## 2. Minkowski causal geometry
 
-Define timelike, spacelike, null, causal, and future-directed vectors. State
-explicitly which predicates exclude zero; the closed future cone includes zero.
-Define separation using differences of points and prove invariance under
-translations and the relevant Lorentz transformations.
+Completed: spacelike separation of sets using strictly positive Minkowski squares
+of point differences. Separation is symmetric, passes to subsets, implies
+disjointness, and is preserved by shared translations. Sign examples exclude unit
+time and nonzero null displacements and include unit spatial displacements. With
+zero spatial dimensions, separation holds exactly when one set is empty.
+
+Next: define the remaining causal-vector predicates and the future cone, stating
+which include zero. Prove separation invariance under the relevant Lorentz transformations.
 
 Completed: open bounded regions using the existing product topology and bornology,
 with the inclusion order and finite unions. The empty set is included; no causal
-convexity or double-cone restriction is imposed. Spacelike separation of regions
-remains to be defined.
+convexity or double-cone restriction is imposed.
 
 ## 3. Local algebras and nets
 
@@ -53,7 +56,9 @@ Completed: `IsotoneNet n H` uses Mathlib's `OrderHom` to assign
 Isotony is stated as operator-set inclusion, and the local algebras form a directed
 family. No algebra value is prescribed for the empty region.
 
-Next: state locality as pairwise commutation at spacelike separation.
+Completed: `IsotoneNet.IsCausal` states pairwise operator commutation at spacelike
+separation. Equivalent formulations use inclusion in the other algebra's commutant
+or vanishing commutators. Empty-region observables commute with every local algebra.
 
 Keep abstract C*-algebra nets and concrete von Neumann nets as distinct
 formulations. Connecting them through a state and GNS representation requires

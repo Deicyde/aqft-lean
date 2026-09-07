@@ -5,9 +5,9 @@ pseudo-Riemannian manifolds and Minkowski spacetime.
 
 The long-term target is the concrete Haag–Kastler framework: a net of local von
 Neumann algebras on a common Hilbert space, with isotony, locality, Poincaré
-covariance, a vacuum, and the spectrum condition. **Isotony is formalized**; the
-other AQFT axioms remain future work. The geometric foundation includes Lorentzian
-metrics, a proved Minkowski signature, and the algebraic group of
+covariance, a vacuum, and the spectrum condition. **Isotony and causality are
+formalized**; the other AQFT axioms remain future work. The geometric foundation
+includes Lorentzian metrics, a proved Minkowski signature, and the algebraic group of
 metric-preserving diffeomorphisms.
 
 ## Implemented
@@ -44,6 +44,11 @@ metric-preserving diffeomorphisms.
 - `AQFT.IsotoneNet n H`: an order-preserving assignment of local
   `VonNeumannAlgebra H` values to regions. Mathlib's `OrderHom` expresses isotony
   directly. The resulting local algebras form a directed family under inclusion.
+- `MinkowskiSpace.SpacelikeSeparated`: every displacement between points of the
+  two sets has strictly positive Minkowski square. Separation is symmetric,
+  passes to subsets, implies disjointness, and is invariant under shared translations.
+- `IsotoneNet.IsCausal`: all operators in spacelike separated local algebras
+  commute. This is proved equivalent to commutant inclusion and to `a*b - b*a = 0`.
 
 Minkowski space has default instances of these manifold classes. The explicit
 metric structures serve as constructors: `g.toBundle` installs a chosen metric
@@ -60,19 +65,32 @@ open scoped Bundle
 example : IsLorentzianManifold
     𝓘(ℝ, MinkowskiSpace 3) (MinkowskiSpace 3) := inferInstance
 
-example : Group (LorentzianIsometryGroup
+noncomputable example : Group (LorentzianIsometryGroup
     𝓘(ℝ, MinkowskiSpace 3) (MinkowskiSpace 3)) := inferInstance
 
 example {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] (A : IsotoneNet 3 H) {O₁ O₂ : MinkowskiSpace.Region 3}
     (h : O₁ ≤ O₂) : A O₁ ≤ A O₂ :=
   A.monotone h
+
+example {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+    [CompleteSpace H] {A : IsotoneNet 3 H} (hA : A.IsCausal)
+    {O₁ O₂ : MinkowskiSpace.Region 3}
+    (h : MinkowskiSpace.SpacelikeSeparated (O₁ : Set (MinkowskiSpace 3)) O₂)
+    {a b : H →L[ℂ] H} (ha : a ∈ A O₁) (hb : b ∈ A O₂) :
+    a * b - b * a = 0 :=
+  sub_eq_zero.mpr (hA h ha hb).eq
 ```
 
-Both orders in the last example are inclusion. Every algebra acts on the same
+Both orders in the isotony example are inclusion. Every algebra acts on the same
 complex Hilbert space `H`. Boundedness of regions uses the usual product norm,
 not the indefinite pairing. Isotony alone does not prescribe the algebra of the
 empty region or impose locality, covariance, or a vacuum condition.
+
+Causality is imposed separately through `A.IsCausal`. Strict spacelike separation
+excludes coincident, null, and timelike displacements. The empty region is separated
+from every region, so its observables commute with every local algebra; this does
+not by itself identify its algebra with the scalars.
 
 All committed proofs are complete. There are no proof placeholders or added axioms.
 CI builds with warnings treated as errors and audits dependencies on axioms.
