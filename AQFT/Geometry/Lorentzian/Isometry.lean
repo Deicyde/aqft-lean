@@ -50,11 +50,14 @@ theorem tangentQuadraticIsometry_apply (f : Isometry g h) (x : M)
     (v : TangentSpace I x) : f.tangentQuadraticIsometry x v = mfderiv I J f x v := rfl
 
 /-- Metric isometries preserve the negative index at corresponding points. -/
-theorem index_eq (f : Isometry g h) (x : M) : g.index x = h.index (f x) :=
+theorem sigNeg_eq (f : Isometry g h) (x : M) :
+    sigNeg (g.quadraticForm x) = sigNeg (h.quadraticForm (f x)) :=
   QuadraticMap.Equivalent.sigNeg_eq ⟨f.tangentQuadraticIsometry x⟩
 
 /-- Metric isometries preserve the ordered negative and positive signature pair. -/
-theorem signature_eq (f : Isometry g h) (x : M) : g.signature x = h.signature (f x) :=
+theorem signature_eq (f : Isometry g h) (x : M) :
+    (sigNeg (g.quadraticForm x), sigPos (g.quadraticForm x)) =
+      (sigNeg (h.quadraticForm (f x)), sigPos (h.quadraticForm (f x))) :=
   Prod.ext
     (QuadraticMap.Equivalent.sigNeg_eq ⟨f.tangentQuadraticIsometry x⟩)
     (QuadraticMap.Equivalent.sigPos_eq ⟨f.tangentQuadraticIsometry x⟩)
@@ -63,10 +66,10 @@ theorem signature_eq (f : Isometry g h) (x : M) : g.signature x = h.signature (f
 theorem isLorentzian_iff (f : Isometry g h) : g.IsLorentzian ↔ h.IsLorentzian := by
   constructor
   · intro hg y
-    rw [f.symm.index_eq y]
+    rw [f.symm.sigNeg_eq y]
     exact hg (f.symm y)
   · intro hh x
-    rw [f.index_eq x]
+    rw [f.sigNeg_eq x]
     exact hh (f x)
 
 end PseudoRiemannianMetric.Isometry

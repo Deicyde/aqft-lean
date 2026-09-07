@@ -24,30 +24,33 @@ namespace AQFT.Spacetime.MinkowskiSpace
     (metric n).quadraticForm x = quadraticForm n := rfl
 
 /-- Minkowski space has one negative metric direction at every point. -/
-@[simp] theorem metric_index (n : ℕ) (x : MinkowskiSpace n) :
-    (metric n).index x = 1 := by
+@[simp] theorem metric_sigNeg (n : ℕ) (x : MinkowskiSpace n) :
+    sigNeg ((metric n).quadraticForm x) = 1 := by
   change sigNeg (quadraticForm n) = 1
   exact quadraticForm_sigNeg n
 
 /-- The Minkowski metric has signature $(1,k)$, ordered as negative then positive. -/
 @[simp] theorem metric_signature (k : ℕ) (x : MinkowskiSpace k) :
-    (metric k).signature x = (1, k) := by
+    (sigNeg ((metric k).quadraticForm x), sigPos ((metric k).quadraticForm x)) = (1, k) := by
   change (sigNeg (quadraticForm k), sigPos (quadraticForm k)) = (1, k)
   simp
 
 /-- Minkowski space with `k` spatial coordinates has total dimension `k + 1`. -/
 @[simp] theorem finrank (k : ℕ) : Module.finrank ℝ (MinkowskiSpace k) = k + 1 := by
-  simp [MinkowskiSpace, Module.finrank_prod, Nat.add_comm]
+  have h := Module.finrank_prod (R := ℝ) (M := ℝ) (M' := EuclideanSpace ℝ (Fin k))
+  change Module.finrank ℝ (ℝ × EuclideanSpace ℝ (Fin k)) = k + 1
+  simpa only [Module.finrank_self, finrank_euclideanSpace, Fintype.card_fin, Nat.add_comm] using h
 
 /-- In total dimension $n \geq 1$, the Minkowski metric has signature $(1,n-1)$. -/
 theorem metric_signature_total_dimension (n : ℕ) (hn : 1 ≤ n)
     (x : MinkowskiSpace (n - 1)) :
     Module.finrank ℝ (MinkowskiSpace (n - 1)) = n ∧
-      (metric (n - 1)).signature x = (1, n - 1) := by
+      (sigNeg ((metric (n - 1)).quadraticForm x),
+        sigPos ((metric (n - 1)).quadraticForm x)) = (1, n - 1) := by
   exact ⟨by rw [finrank, Nat.sub_add_cancel hn], metric_signature (n - 1) x⟩
 
 /-- The constant Minkowski metric is Lorentzian. -/
-theorem metric_isLorentzian (n : ℕ) : (metric n).IsLorentzian := metric_index n
+theorem metric_isLorentzian (n : ℕ) : (metric n).IsLorentzian := metric_sigNeg n
 
 /-- Minkowski spacetime with its smooth Lorentzian metric. -/
 noncomputable def lorentzianMetric (n : ℕ) :

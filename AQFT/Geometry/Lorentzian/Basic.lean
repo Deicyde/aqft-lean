@@ -62,33 +62,16 @@ theorem signature_eq_finrank (g : PseudoRiemannianMetric I M) (x : M) :
   have hdim : Module.finrank ℝ (TangentSpace I x) = Module.finrank ℝ E := rfl
   exact h.trans hdim
 
-/-- The negative index of the tangent metric, computed by Mathlib's signature API. -/
-noncomputable def index (g : PseudoRiemannianMetric I M) (x : M) : ℕ :=
-  sigNeg (g.quadraticForm x)
-
-/-- The tangent signature, ordered as (negative directions, positive directions). -/
-noncomputable def signature (g : PseudoRiemannianMetric I M) (x : M) : ℕ × ℕ :=
-  (sigNeg (g.quadraticForm x), sigPos (g.quadraticForm x))
-
-@[simp] theorem signature_fst (g : PseudoRiemannianMetric I M) (x : M) :
-    (g.signature x).1 = g.index x := rfl
-
-@[simp] theorem signature_snd (g : PseudoRiemannianMetric I M) (x : M) :
-    (g.signature x).2 = sigPos (g.quadraticForm x) := rfl
-
-/-- The negative index is bounded by the model dimension. -/
-theorem index_le_finrank (g : PseudoRiemannianMetric I M) (x : M) :
-    g.index x ≤ Module.finrank ℝ E :=
-  sigPos_le_finrank (-g.quadraticForm x)
-
 /-- A pseudo-Riemannian metric is Lorentzian when its negative index is always one. -/
 def IsLorentzian (g : PseudoRiemannianMetric I M) : Prop :=
-  ∀ x, g.index x = 1
+  ∀ x, sigNeg (g.quadraticForm x) = 1
 
 /-- For a nondegenerate metric, index one is equivalent to signature $(1,n-1)$,
 where $n$ is the model dimension. -/
 theorem isLorentzian_iff_signature (g : PseudoRiemannianMetric I M) :
-    g.IsLorentzian ↔ ∀ x, g.signature x = (1, Module.finrank ℝ E - 1) := by
+    g.IsLorentzian ↔ ∀ x,
+      (sigNeg (g.quadraticForm x), sigPos (g.quadraticForm x)) =
+        (1, Module.finrank ℝ E - 1) := by
   constructor
   · intro hg x
     have hn : sigNeg (g.quadraticForm x) = 1 := hg x
@@ -111,30 +94,33 @@ structure LorentzianMetric (I : ModelWithCorners ℝ E H)
 namespace LorentzianMetric
 
 /-- The negative index of a Lorentzian metric is one. -/
-@[simp] theorem index_eq_one (g : LorentzianMetric I M) (x : M) :
-    g.toPseudoRiemannianMetric.index x = 1 := g.isLorentzian x
+@[simp] theorem sigNeg_eq_one (g : LorentzianMetric I M) (x : M) :
+    sigNeg (g.toPseudoRiemannianMetric.quadraticForm x) = 1 := g.isLorentzian x
 
 /-- A Lorentzian metric on a nonempty manifold has positive model dimension. -/
 theorem one_le_finrank (g : LorentzianMetric I M) (x : M) :
     1 ≤ Module.finrank ℝ E := by
-  simpa using g.toPseudoRiemannianMetric.index_le_finrank x
+  calc
+    1 = sigNeg (g.toPseudoRiemannianMetric.quadraticForm x) := (g.sigNeg_eq_one x).symm
+    _ ≤ Module.finrank ℝ E := sigPos_le_finrank (-g.toPseudoRiemannianMetric.quadraticForm x)
 
 /-- A Lorentzian tangent space has all but one dimension in its positive signature. -/
 theorem positive_signature_add_one (g : LorentzianMetric I M) (x : M) :
     sigPos (g.toPseudoRiemannianMetric.quadraticForm x) + 1 = Module.finrank ℝ E := by
-  have h := g.toPseudoRiemannianMetric.signature_eq_finrank x
-  change _ + g.toPseudoRiemannianMetric.index x = _ at h
-  simpa using h
+  simpa only [g.sigNeg_eq_one x] using g.toPseudoRiemannianMetric.signature_eq_finrank x
 
 /-- A Lorentzian metric on a model of dimension $n$ has signature $(1,n-1)$. -/
 @[simp] theorem signature_eq (g : LorentzianMetric I M) (x : M) :
-    g.toPseudoRiemannianMetric.signature x = (1, Module.finrank ℝ E - 1) :=
+    (sigNeg (g.toPseudoRiemannianMetric.quadraticForm x),
+      sigPos (g.toPseudoRiemannianMetric.quadraticForm x)) =
+        (1, Module.finrank ℝ E - 1) :=
   (g.toPseudoRiemannianMetric.isLorentzian_iff_signature.mp g.isLorentzian) x
 
 /-- The same signature formula with the total dimension named explicitly. -/
 theorem signature_eq_of_finrank (g : LorentzianMetric I M) {n : ℕ}
     (hdim : Module.finrank ℝ E = n) (x : M) :
-    g.toPseudoRiemannianMetric.signature x = (1, n - 1) := by
+    (sigNeg (g.toPseudoRiemannianMetric.quadraticForm x),
+      sigPos (g.toPseudoRiemannianMetric.quadraticForm x)) = (1, n - 1) := by
   simpa only [hdim] using g.signature_eq x
 
 end LorentzianMetric
