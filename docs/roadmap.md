@@ -34,7 +34,7 @@ Next:
 Levi-Civita connections, geodesics, and curvature belong to the geometric library,
 but are not prerequisites for a first AQFT net on explicit Minkowski space.
 
-## 2. Minkowski causal geometry
+## 2. Causal geometry
 
 Completed: spacelike separation of sets using strictly positive Minkowski squares
 of point differences. Separation is symmetric, passes to subsets, implies
@@ -45,20 +45,29 @@ zero spatial dimensions, separation holds exactly when one set is empty.
 Next: define the remaining causal-vector predicates and the future cone, stating
 which include zero. Prove separation invariance under the relevant Lorentz transformations.
 
-Completed: open bounded regions using the existing product topology and bornology,
-with the inclusion order and finite unions. The empty set is included; no causal
+Completed: regular C¹ causal curves and metric-induced separation on arbitrary
+Lorentzian manifolds. Tangents are nonzero with nonpositive square, including at
+interval endpoints. The relation includes coincident points and is symmetric;
+no global time orientation or transitive closure is imposed. In Minkowski space,
+causal connectivity is proved equivalent to nonpositive squared displacement, so
+the curve definition recovers the original strict spacelike-separation criterion.
+
+Completed: regions on arbitrary topological spaces as open subsets with compact
+closure, with inclusion and finite unions. In finite-dimensional Minkowski space
+these are exactly the bounded open subsets. The empty set is included; no causal
 convexity or double-cone restriction is imposed.
 
 ## 3. Local algebras and nets
 
-Completed: `IsotoneNet n H` uses Mathlib's `OrderHom` to assign
-`VonNeumannAlgebra H` values to open bounded regions on one complex Hilbert space.
+Completed: `IsotoneNet M H` uses Mathlib's `OrderHom` to assign
+`VonNeumannAlgebra H` values to relatively compact open regions of `M`, all acting
+on one complex Hilbert space.
 Isotony is stated as operator-set inclusion, and the local algebras form a directed
 family. No algebra value is prescribed for the empty region.
 
-Completed: `IsotoneNet.IsCausal` states pairwise operator commutation at spacelike
-separation. Equivalent formulations use inclusion in the other algebra's commutant
-or vanishing commutators. Empty-region observables commute with every local algebra.
+Completed: `A.IsCausal g` states pairwise operator commutation for regions
+separated by any Lorentzian metric `g`. Equivalent formulations use inclusion in
+the other algebra's commutant or vanishing commutators. Empty-region observables commute with every local algebra.
 
 Keep abstract C*-algebra nets and concrete von Neumann nets as distinct
 formulations. Connecting them through a state and GNS representation requires
@@ -84,11 +93,12 @@ These generators are generally unbounded. Ordinary spectra of bounded operators
 do not suffice. Do not insert an unconstrained proposition as a substitute for
 the missing spectral theory.
 
-## 6. Curved spacetime — later extension
+## 6. Further curved-spacetime structure
 
-Develop time orientation, causal curves, Cauchy surfaces, and global hyperbolicity.
-Construct the spacetime category with metric- and orientation-preserving embeddings
-having causally convex images. Then formulate locally covariant AQFT and the
+The net and causality axiom now apply to arbitrary Lorentzian manifolds. Develop
+time orientation, Cauchy surfaces, and global hyperbolicity. Relate regular C¹
+causal curves to piecewise C¹ and Lipschitz conventions. Construct the spacetime
+category with metric- and orientation-preserving embeddings having causally convex images. Then formulate locally covariant AQFT and the
 time-slice axiom following Brunetti–Fredenhagen–Verch, §2.
 
 Sources and links are listed in the [README](../README.md).
