@@ -1,0 +1,8 @@
+AQFT Lean
+Copyright 2026 AQFT Lean contributors
+
+The metric representation and constant-metric smoothness proof are adapted from
+Mathlib's Geometry/Manifold/VectorBundle/Riemannian.lean and
+Geometry/Manifold/Riemannian/Basic.lean.
+Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
+These files are distributed under the Apache License, Version 2.0.
