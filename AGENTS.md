@@ -8,6 +8,10 @@ current status and `docs/roadmap.md` for planned work.
   declarations with `#check` and use focused imports.
 - Use Mathlib's manifolds, tangent bundles, bilinear forms, and operator algebras.
   Express smooth tensor fields as bundle sections, with the correct transition maps.
+- Follow Mathlib's Riemannian construction: install `PseudoInnerProductSpace` on
+  fibers through `PseudoRiemannianBundle`, keep smoothness in a Prop typeclass, and
+  state Lorentzian index one with `IsLorentzianManifold`. Bundled metrics construct
+  these instances. Keep the existing topology and auxiliary norm unchanged.
 - A pseudo-Riemannian metric is symmetric and nondegenerate. It need not be positive
   definite, and a nonzero vector can have zero square.
 - Use the Lorentzian sign convention `(-,+,…,+)`. State dimensions, signatures,
