@@ -2,8 +2,8 @@
 
 The project develops a geometric foundation and abstract C*-algebra nets for the
 Haag–Kastler framework. Each step should add complete definitions and proofs,
-with examples that exercise the definitions. States and Hilbert-space
-representations can be added after the abstract net.
+with examples that exercise the definitions. Covariance acts directly by
+automorphisms of the abstract ambient algebra; states remain future work.
 
 ## 1. Pseudo-Riemannian foundations — started
 
@@ -20,7 +20,9 @@ Completed:
 - The Minkowski signature: one negative and `n` positive directions, including
   `n = 0`, and the resulting smooth Lorentzian metric.
 - Metric-preserving diffeomorphisms, their identity/composition/inverse laws, and
-  the algebraic self-isometry group. Isometries preserve both signature components.
+  the self-isometry group. Isometries preserve both signature components.
+- A self-isometry topology induced by compact-open convergence of maps and
+  inverses. Group operations and evaluation are continuous on locally compact manifolds.
 - Concrete Minkowski translations and time reversal in this group.
 
 Next:
@@ -29,8 +31,7 @@ Next:
   diffeomorphisms. An arbitrary smooth pullback can be degenerate.
 - Prove local constancy of signature, then constancy on connected components.
   Do not assume a disconnected manifold has one global signature automatically.
-- Equip the isometry group with an appropriate topology, then develop its Lie
-  group structure under explicitly stated hypotheses.
+- Develop the isometry group's Lie group structure under explicitly stated hypotheses.
 
 Levi-Civita connections, geodesics, and curvature belong to the geometric library,
 but are not prerequisites for a first AQFT net on explicit Minkowski space.
@@ -56,7 +57,8 @@ the curve definition recovers the original strict spacelike-separation criterion
 Completed: regions on arbitrary topological spaces as open subsets with compact
 closure, with inclusion and finite unions. In finite-dimensional Minkowski space
 these are exactly the bounded open subsets. The empty set is included; no causal
-convexity or double-cone restriction is imposed.
+convexity or double-cone restriction is imposed. Homeomorphisms preserve regions,
+and the self-isometry group acts on them.
 
 ## 3. Local algebras and nets
 
@@ -75,23 +77,42 @@ separated by any Lorentzian metric `g`. Equivalent formulations use inclusion in
 the other algebra's relative commutant inside `B` or vanishing commutators.
 Empty-region observables commute with every local algebra.
 
-Next: construct representations from states using Mathlib's GNS API, then connect
-the abstract net to represented local algebras and local von Neumann algebras.
-These are optional constructions on the net. Treat generation of the ambient
-algebra, additivity, time-slice, and other additional assumptions as separately
-named conditions.
+Next: construct representations from states using Mathlib's GNS API, and connect
+represented local algebras to local von Neumann algebras. These are additional
+constructions on the net. Treat generation of the ambient algebra, additivity,
+time-slice, and other additional assumptions as separately named conditions.
 
-## 4. Covariance and vacuum
+## 4. Isometry covariance and vacuum
 
-Construct the proper orthochronous Poincaré group and its action on regions. The
-existing full isometry group has no orientation or time-orientation restriction;
-identifying the Minkowski isometry group with the full Poincaré group is also
-future work.
-Formulate covariance by an action through star-algebra automorphisms of `B`, with
-appropriate continuity. For an invariant state, construct a unitary implementation
-in its GNS representation and prove strong continuity under explicit hypotheses.
-State a normalized invariant vacuum that is cyclic for the represented observable
-algebra; distinguish existence from any additional uniqueness axiom.
+Completed: `A.IsCovariant g π` requires the chosen operator representation `π`
+to be faithful and asserts the existence of an injective group homomorphism
+`α : g.IsometryGroup →* (B ≃⋆ₐ[ℂ] B)`. In the representation on a complete
+complex Hilbert space, every matrix coefficient of `f ↦ π(α(f)(a))` is continuous.
+The automorphisms transport local
+algebras by `α(f)(A(O)) = A(f • O)`. The representation specifies the weak
+operator topology, while the net and its algebra automorphisms remain abstract.
+Since the locals need not generate `B`, faithfulness is imposed on the action on
+all of `B`.
+
+Completed: weak, strong, and ultraweak continuity of these represented
+automorphism orbits are proved equivalent, giving equivalent covariance axioms.
+The weak and strong definitions agree with Mathlib's operator topologies.
+Ultraweak continuity uses coefficient series from two square-summable vector
+sequences, following Lurie, Lecture 5. The series are proved convergent, and the
+uniform operator bound proves the ultraweak equivalence. No separability or
+operator-norm continuity assumption is imposed.
+
+This uses the full isometry group, including time reversal in Minkowski space.
+It is a stronger symmetry convention than the identity-component covariance
+used by Fewster and Rejzner, §4.1. Faithfulness is an explicit requirement here.
+Orientation-preserving subgroups and antiunitary symmetries remain future work.
+A later positive-energy formulation must account
+for this choice of symmetries.
+
+Next: construct unitary implementations in GNS representations using suitable
+invariant states. State a normalized invariant vacuum cyclic for the represented
+observable algebra, and distinguish existence from
+any additional uniqueness axiom.
 
 ## 5. Spectrum condition
 

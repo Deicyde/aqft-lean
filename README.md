@@ -4,11 +4,13 @@ Foundations for algebraic quantum field theory in Lean 4, starting with
 pseudo-Riemannian manifolds and Minkowski spacetime.
 
 The target is the Haag–Kastler framework, starting with a net of local unital
-C*-algebras inside an abstract ambient C*-algebra. **Isotony and causality are
-formalized** on arbitrary Lorentzian manifolds. Covariance, states, Hilbert-space
-representations, vacuum assumptions, and the spectrum condition remain future
-work. The geometric foundation includes Lorentzian metrics, a proved Minkowski
-signature, and the algebraic group of metric-preserving diffeomorphisms.
+C*-algebras inside an abstract ambient C*-algebra. **Isotony, causality, and
+isometry covariance are formalized** on Lorentzian manifolds. Covariance is a
+faithful action of the metric self-isometries by complex star-algebra
+automorphisms of the ambient algebra. Continuity is tested in the weak operator
+topology of a chosen faithful Hilbert-space representation. States, vacuum
+assumptions, and the spectrum condition remain future work. The geometric
+foundation includes Lorentzian metrics and a proved Minkowski signature.
 
 ## Implemented
 
@@ -37,11 +39,14 @@ signature, and the algebraic group of metric-preserving diffeomorphisms.
 - `MinkowskiSpace.lorentzianMetric n`: Minkowski space as a Lorentzian example,
   with exactly one negative and `n` positive directions.
 - `PseudoRiemannianMetric.Isometry g h`: a diffeomorphism whose derivative preserves
-  the tangent metric. Self-isometries form a group under composition.
+  the tangent metric. Self-isometries form a group under composition, with the
+  topology induced by compact-open convergence of the maps and their inverses.
+  On locally compact manifolds, the group operations and evaluation are continuous.
 - Minkowski translations and time reversal as explicit metric isometries.
 - `AQFT.Spacetime.Region M`: open subsets with compact closure, ordered by inclusion.
   In Minkowski space these are exactly the bounded open subsets. The empty set is
-  included, and finite unions supply common upper regions.
+  included, and finite unions supply common upper regions. Homeomorphisms map
+  regions to regions, giving an action of the self-isometry group.
 - `AQFT.CStarSubalgebra B`: norm-closed unital complex star subalgebras of an
   abstract `B` with `[CStarAlgebra B]`. Each local carrier inherits a native
   `CStarAlgebra` instance. The relative commutant is also a closed star subalgebra
@@ -60,6 +65,15 @@ signature, and the algebraic group of metric-preserving diffeomorphisms.
 - `A.IsCausal g`: elements of local algebras of regions separated by `g` commute
   in `B`. This is proved equivalent to relative commutant inclusion and to
   `a*b - b*a = 0`.
+- `A.IsCovariant g π`: the chosen operator representation `π` is faithful, and
+  there exists an injective group homomorphism
+  `α : g.IsometryGroup →* (B ≃⋆ₐ[ℂ] B)` with weakly continuous represented
+  observable orbits and `α(f)(A(O)) = A(f • O)`. The equation is equality of
+  sets under direct image.
+- Weak, strong, and ultraweak continuity of represented automorphism orbits are
+  proved equivalent. Weak and strong continuity agree with Mathlib's operator
+  topologies. Ultraweak continuity uses all coefficient series from pairs of
+  square-summable vector sequences; each such series is proved convergent.
 
 Minkowski space has default instances of these manifold classes. The explicit
 metric structures serve as constructors: `g.toBundle` installs a chosen metric
@@ -98,7 +112,7 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 Both orders in the isotony example are inclusion. Every local algebra is a
 norm-closed subalgebra of the same abstract `B`, sharing its unit and scalar
-inclusion. No Hilbert space or representation is needed. The definition does not
+inclusion. The net definition is independent of a Hilbert space or representation. It does not
 require the local algebras to generate all of `B` or prescribe the algebra of the
 empty region. Regions use compact closure in the manifold topology; a Lorentzian
 metric supplies no norm or bornology.
@@ -118,9 +132,31 @@ formalized. The empty region is separated from every region, so its observables
 commute with every local algebra; this does not by itself identify its algebra
 with the scalars.
 
-States and GNS representations can later realize these observables as operators
-on Hilbert spaces. Constructing the represented nets and their local von Neumann
-algebras requires additional results; it is not part of the current net definition.
+Covariance acts directly on the abstract ambient algebra `B`. Faithfulness means
+that distinct isometries give distinct automorphisms of `B`. Continuity is tested
+after applying a faithful representation `π` on a complete complex Hilbert space:
+for every observable `a` and vectors `ξ, η`, the matrix coefficient
+`f ↦ ⟪ξ, π(α(f)(a)) η⟫` is continuous. The representation specifies the weak
+operator topology; the abstract C*-algebra alone does not choose one. The local
+algebras need not generate `B`, so faithfulness is measured on all of `B`.
+
+`IsotoneNet.isCovariant_iff_strong` and `isCovariant_iff_ultraweak` give the same
+axiom with strong or ultraweak continuity. These equivalences concern the orbits
+of algebra automorphisms in the fixed representation. The strong-continuity
+proof uses multiplication and the adjoint; the ultraweak proof uses the uniform
+bound `‖π(α(f)(a))‖ ≤ ‖a‖`. No operator-norm continuity is required.
+
+The symmetry group is the full metric self-isometry group, as requested. In
+Minkowski space this includes time reversal. Covariance under the full group
+is a stronger symmetry convention than covariance under the
+identity component used in [Fewster and Rejzner, §4.1](https://arxiv.org/abs/1904.04051).
+Faithfulness of the automorphism action is an explicit requirement of the
+present formulation. A unitary implementation is additional structure on a
+Hilbert-space representation. Orientation restrictions, vacuum assumptions,
+and the positive-energy condition remain future work.
+
+Constructing representations from chosen states with Mathlib's GNS API, and
+passing to local von Neumann algebras, remain additional work.
 
 All committed proofs are complete. There are no proof placeholders or added axioms.
 CI builds with warnings treated as errors and audits dependencies on axioms.
@@ -162,9 +198,11 @@ when describing a Lorentzian manifold without boundary. Minkowski space has all
 these properties. The index-one convention also permits dimension one; applications
 requiring spatial directions should impose dimension at least two.
 
-The isometry group is currently an algebraic group. Its topology, Lie group
-structure, and the proper orthochronous Poincaré subgroup remain future work. The
-full group includes translations and time reversal; no time orientation is fixed.
+The self-isometry topology uses the compact-open topologies on both maps and
+inverses. Its topological group laws and continuous action use local compactness
+of the manifold. Its Lie group structure and orientation-preserving subgroups
+remain future work. The full group includes translations and time reversal;
+no time orientation is fixed.
 
 Mathlib's `IsRiemannianManifold` additionally relates the metric to an extended
 distance obtained from path lengths. That distance condition is not carried over
@@ -182,7 +220,9 @@ See [the roadmap](docs/roadmap.md) for the remaining geometry and AQFT work, and
 - [Bär, Lorentzian Geometry, §1.1](https://www.math.uni-potsdam.de/fileadmin/user_upload/Prof-Geometrie/Dokumente/Lehre/Veranstaltungen/WS0405-SS08/LorentzianGeometryEnglish13Jan2020.pdf),
   for the Minkowski convention and Lorentzian geometry.
 - [Fewster and Rejzner, Algebraic Quantum Field Theory: an introduction, §§4–6](https://arxiv.org/abs/1904.04051),
-  for local algebras, representations, and vacuum assumptions.
+  for local algebras, automorphism covariance, representations, and vacuum assumptions.
+- [Lurie, Math 261y: von Neumann Algebras, Lecture 5, p. 3](https://www.math.ias.edu/~lurie/261ynotes/lecture5.pdf),
+  for the square-summable coefficient-series definition of the ultraweak topology.
 - [Bunk, MacManus, and Schenkel, Lorentzian bordisms in algebraic quantum field theory, §2.1](https://doi.org/10.1007/s11005-025-01906-3),
   for causal curves and separation of regions on Lorentzian manifolds.
 - [Brunetti, Fredenhagen, and Verch, The Generally Covariant Locality Principle, §2](https://arxiv.org/abs/math-ph/0112041),

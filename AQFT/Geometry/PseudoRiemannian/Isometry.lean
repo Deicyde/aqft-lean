@@ -6,7 +6,8 @@ import Mathlib.Geometry.Manifold.Diffeomorph
 
 An isometry is a smooth diffeomorphism whose differential preserves the tangent
 bilinear forms. This definition applies to indefinite metrics. Self-isometries form
-an algebraic group under composition; no topology or Lie group structure is asserted.
+a group under composition. Their topology is developed in `IsometryTopology`;
+no Lie group structure is asserted.
 
 ## References
 

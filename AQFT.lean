@@ -8,5 +8,6 @@ import AQFT.Spacetime.Manifold
 import AQFT.Net.Basic
 import AQFT.Net.Causality
 import AQFT.Net.Minkowski
+import AQFT.Net.Covariance
 
 /-! # Foundations for algebraic quantum field theory -/
