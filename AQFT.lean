@@ -6,5 +6,7 @@ import AQFT.Spacetime.Lorentzian
 import AQFT.Spacetime.MinkowskiIsometry
 import AQFT.Spacetime.Manifold
 import AQFT.Net.Basic
+import AQFT.Net.Causality
+import AQFT.Net.Minkowski
 
 /-! # Foundations for algebraic quantum field theory -/

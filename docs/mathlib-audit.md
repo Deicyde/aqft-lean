@@ -6,14 +6,42 @@ were checked in Lean using focused imports, `#check`, and instance synthesis.
 These findings concern the pinned release, not external Lean projects or future
 Mathlib revisions.
 
-## Operator algebras and continuity
+## Abstract C*-algebras and the current net
+
+Mathlib's `CStarAlgebra B` supplies a complete unital complex normed star algebra
+with the C*-identity. `StarSubalgebra ℂ B` supplies unital star subalgebras, and
+`StarSubalgebra.cstarAlgebra` gives a closed subalgebra's carrier its inherited
+`CStarAlgebra` instance. These classes and instances are in
+[CStarAlgebra/Classes.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Analysis/CStarAlgebra/Classes.lean).
+
+The project bundles the algebra and closedness as
+`AQFT.CStarSubalgebra B := {S : StarSubalgebra ℂ B // IsClosed (S : Set B)}`.
+Closure is in the norm topology of `B`. Each local algebra shares the ambient unit
+and scalar inclusion, and has a native C*-algebra instance on its carrier.
+`IsotoneNet M B := Spacetime.Region M →o CStarSubalgebra B` then expresses isotony
+by inclusion. It requires no Hilbert space or representation, and does not assert
+that the local algebras generate `B`.
+
+`CStarSubalgebra.commutant` uses `StarSubalgebra.centralizer` and the closedness
+theorem `Set.isClosed_centralizer`. It consists of elements of `B` commuting with
+every element of the given local algebra. This relative commutant supports the
+causality equivalence `A O₁ ≤ (A O₂).commutant`; no bicommutant condition is imposed.
+See
+[Algebra/Star/Subalgebra.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Algebra/Star/Subalgebra.lean)
+and
+[Topology/Algebra/StarSubalgebra.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Topology/Algebra/StarSubalgebra.lean).
+
+## Representations, operator algebras, and continuity
+
+The following APIs support later representations of the abstract net. They are
+not prerequisites for its isotony or causality definitions.
 
 | Area | Existing support | Project use |
 | --- | --- | --- |
 | Weak operator topology | `ContinuousLinearMapWOT`, written `E →WOT[ℂ] F` | Express weak continuity by matrix coefficients. |
 | Strong operator topology | `PointwiseConvergenceCLM`, written `E →Lₚₜ[ℂ] F` | Express strong continuity by continuity of every orbit map. |
 | GNS construction | `PositiveLinearMap.GNS`, `gnsStarAlgHom`, `gnsNonUnitalStarAlgHom` | Reuse the Hilbert space and representation induced by a positive functional. |
-| Von Neumann algebras | `WStarAlgebra`, `VonNeumannAlgebra H`, `VonNeumannAlgebra.commutant` | Reuse concrete local algebras, their inclusion order, and commutants. |
+| Von Neumann algebras | `WStarAlgebra`, `VonNeumannAlgebra H`, `VonNeumannAlgebra.commutant` | Use for later represented local algebras and their operator commutants. |
 
 For Hilbert-space-valued operators,
 `ContinuousLinearMapWOT.continuous_iff` identifies continuity of `T` into the weak
@@ -52,11 +80,13 @@ state, cyclicity, and symmetry properties around it. See
 
 `VonNeumannAlgebra H` is a bundled star subalgebra of bounded operators equal to
 its double commutant. It has an inclusion order, `commutant_commutant`, and
-`mem_commutant_iff`, directly useful for isotony and locality. `WStarAlgebra` is
+`mem_commutant_iff`, useful for a represented net's isotony and locality. `WStarAlgebra` is
 the abstract C*-algebra definition using existence of a Banach-space predual.
 The module lists the equivalence of the abstract and concrete definitions, and
 the topological bicommutant theorem, as future work. This is a specific missing
-bridge; the weak operator topology itself is already implemented. See
+bridge; the weak operator topology itself is already implemented. Connecting an
+abstract net, a chosen GNS representation, and local von Neumann algebras remains
+additional project work. See
 [VonNeumannAlgebra/Basic.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Analysis/VonNeumannAlgebra/Basic.lean).
 
 ## Spectral theory

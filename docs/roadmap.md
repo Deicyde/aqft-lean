@@ -1,8 +1,9 @@
 # Roadmap
 
-The first target is a mathematically faithful geometric foundation. We will then
-state the concrete Haag–Kastler axioms. Each step should add complete definitions
-and proofs, with examples that exercise the definitions.
+The project develops a geometric foundation and abstract C*-algebra nets for the
+Haag–Kastler framework. Each step should add complete definitions and proofs,
+with examples that exercise the definitions. States and Hilbert-space
+representations can be added after the abstract net.
 
 ## 1. Pseudo-Riemannian foundations — started
 
@@ -34,31 +35,51 @@ Next:
 Levi-Civita connections, geodesics, and curvature belong to the geometric library,
 but are not prerequisites for a first AQFT net on explicit Minkowski space.
 
-## 2. Minkowski causal geometry
+## 2. Causal geometry
 
-Define timelike, spacelike, null, causal, and future-directed vectors. State
-explicitly which predicates exclude zero; the closed future cone includes zero.
-Define separation using differences of points and prove invariance under
-translations and the relevant Lorentz transformations.
+Completed: spacelike separation of sets using strictly positive Minkowski squares
+of point differences. Separation is symmetric, passes to subsets, implies
+disjointness, and is preserved by shared translations. Sign examples exclude unit
+time and nonzero null displacements and include unit spatial displacements. With
+zero spatial dimensions, separation holds exactly when one set is empty.
 
-Completed: open bounded regions using the existing product topology and bornology,
-with the inclusion order and finite unions. The empty set is included; no causal
-convexity or double-cone restriction is imposed. Spacelike separation of regions
-remains to be defined.
+Next: define the remaining causal-vector predicates and the future cone, stating
+which include zero. Prove separation invariance under the relevant Lorentz transformations.
+
+Completed: regular C¹ causal curves and metric-induced separation on arbitrary
+Lorentzian manifolds. Tangents are nonzero with nonpositive square, including at
+interval endpoints. The relation includes coincident points and is symmetric;
+no global time orientation or transitive closure is imposed. In Minkowski space,
+causal connectivity is proved equivalent to nonpositive squared displacement, so
+the curve definition recovers the original strict spacelike-separation criterion.
+
+Completed: regions on arbitrary topological spaces as open subsets with compact
+closure, with inclusion and finite unions. In finite-dimensional Minkowski space
+these are exactly the bounded open subsets. The empty set is included; no causal
+convexity or double-cone restriction is imposed.
 
 ## 3. Local algebras and nets
 
-Completed: `IsotoneNet n H` uses Mathlib's `OrderHom` to assign
-`VonNeumannAlgebra H` values to open bounded regions on one complex Hilbert space.
-Isotony is stated as operator-set inclusion, and the local algebras form a directed
-family. No algebra value is prescribed for the empty region.
+Completed: `CStarSubalgebra B` bundles norm-closed unital complex star subalgebras
+of an abstract ambient `B` with `[CStarAlgebra B]`. Each carrier inherits a native
+`CStarAlgebra` instance and the unit and scalar inclusion of `B`.
 
-Next: state locality as pairwise commutation at spacelike separation.
+Completed: `IsotoneNet M B` uses Mathlib's `OrderHom` to assign these algebras to
+relatively compact open regions of `M`. Isotony is set inclusion, and the local
+algebras form a directed family. No Hilbert-space representation is chosen, no
+algebra value is prescribed for the empty region, and the local algebras are not
+required to generate all of `B`.
 
-Keep abstract C*-algebra nets and concrete von Neumann nets as distinct
-formulations. Connecting them through a state and GNS representation requires
-additional theorems. Treat additivity, time-slice, and other optional assumptions
-as separately named conditions.
+Completed: `A.IsCausal g` states pairwise commutation in `B` for regions
+separated by any Lorentzian metric `g`. Equivalent formulations use inclusion in
+the other algebra's relative commutant inside `B` or vanishing commutators.
+Empty-region observables commute with every local algebra.
+
+Next: construct representations from states using Mathlib's GNS API, then connect
+the abstract net to represented local algebras and local von Neumann algebras.
+These are optional constructions on the net. Treat generation of the ambient
+algebra, additivity, time-slice, and other additional assumptions as separately
+named conditions.
 
 ## 4. Covariance and vacuum
 
@@ -66,24 +87,28 @@ Construct the proper orthochronous Poincaré group and its action on regions. Th
 existing full isometry group has no orientation or time-orientation restriction;
 identifying the Minkowski isometry group with the full Poincaré group is also
 future work.
-Specify a strongly continuous unitary representation and covariance by unitary
-conjugation. State a normalized invariant vacuum that is cyclic for the global
-observable algebra; distinguish existence from any additional uniqueness axiom.
+Formulate covariance by an action through star-algebra automorphisms of `B`, with
+appropriate continuity. For an invariant state, construct a unitary implementation
+in its GNS representation and prove strong continuity under explicit hypotheses.
+State a normalized invariant vacuum that is cyclic for the represented observable
+algebra; distinguish existence from any additional uniqueness axiom.
 
 ## 5. Spectrum condition
 
-Audit joint spectral measures for strongly continuous translation representations.
+In a Hilbert-space representation, audit joint spectral measures for strongly
+continuous translation representations.
 State that the joint spectral measure is supported in the closed future cone, or
 prove equivalence with an appropriate formulation using translation generators.
 These generators are generally unbounded. Ordinary spectra of bounded operators
 do not suffice. Do not insert an unconstrained proposition as a substitute for
 the missing spectral theory.
 
-## 6. Curved spacetime — later extension
+## 6. Further curved-spacetime structure
 
-Develop time orientation, causal curves, Cauchy surfaces, and global hyperbolicity.
-Construct the spacetime category with metric- and orientation-preserving embeddings
-having causally convex images. Then formulate locally covariant AQFT and the
+The net and causality axiom now apply to arbitrary Lorentzian manifolds. Develop
+time orientation, Cauchy surfaces, and global hyperbolicity. Relate regular C¹
+causal curves to piecewise C¹ and Lipschitz conventions. Construct the spacetime
+category with metric- and orientation-preserving embeddings having causally convex images. Then formulate locally covariant AQFT and the
 time-slice axiom following Brunetti–Fredenhagen–Verch, §2.
 
 Sources and links are listed in the [README](../README.md).
