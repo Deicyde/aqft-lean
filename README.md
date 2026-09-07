@@ -5,9 +5,10 @@ pseudo-Riemannian manifolds and Minkowski spacetime.
 
 The long-term target is the concrete Haag–Kastler framework: a net of local von
 Neumann algebras on a common Hilbert space, with isotony, locality, Poincaré
-covariance, a vacuum, and the spectrum condition. These AQFT axioms are **not yet
-formalized**. The geometric foundation now includes Lorentzian metrics, a proved
-Minkowski signature, and the algebraic group of metric-preserving diffeomorphisms.
+covariance, a vacuum, and the spectrum condition. **Isotony is formalized**; the
+other AQFT axioms remain future work. The geometric foundation includes Lorentzian
+metrics, a proved Minkowski signature, and the algebraic group of
+metric-preserving diffeomorphisms.
 
 ## Implemented
 
@@ -38,6 +39,11 @@ Minkowski signature, and the algebraic group of metric-preserving diffeomorphism
 - `PseudoRiemannianMetric.Isometry g h`: a diffeomorphism whose derivative preserves
   the tangent metric. Self-isometries form a group under composition.
 - Minkowski translations and time reversal as explicit metric isometries.
+- `MinkowskiSpace.Region n`: all open bounded subsets, ordered by inclusion.
+  The empty set is included, and finite unions supply common upper regions.
+- `AQFT.IsotoneNet n H`: an order-preserving assignment of local
+  `VonNeumannAlgebra H` values to regions. Mathlib's `OrderHom` expresses isotony
+  directly. The resulting local algebras form a directed family under inclusion.
 
 Minkowski space has default instances of these manifold classes. The explicit
 metric structures serve as constructors: `g.toBundle` installs a chosen metric
@@ -56,7 +62,17 @@ example : IsLorentzianManifold
 
 example : Group (LorentzianIsometryGroup
     𝓘(ℝ, MinkowskiSpace 3) (MinkowskiSpace 3)) := inferInstance
+
+example {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+    [CompleteSpace H] (A : IsotoneNet 3 H) {O₁ O₂ : MinkowskiSpace.Region 3}
+    (h : O₁ ≤ O₂) : A O₁ ≤ A O₂ :=
+  A.monotone h
 ```
+
+Both orders in the last example are inclusion. Every algebra acts on the same
+complex Hilbert space `H`. Boundedness of regions uses the usual product norm,
+not the indefinite pairing. Isotony alone does not prescribe the algebra of the
+empty region or impose locality, covariance, or a vacuum condition.
 
 All committed proofs are complete. There are no proof placeholders or added axioms.
 CI builds with warnings treated as errors and audits dependencies on axioms.
