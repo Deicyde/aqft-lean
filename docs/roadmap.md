@@ -6,19 +6,30 @@ and proofs, with examples that exercise the definitions.
 
 ## 1. Pseudo-Riemannian foundations — started
 
-Completed: a smooth, symmetric, nondegenerate tangent pairing; separation lemmas;
-constant metrics; and a smooth Minkowski metric in every dimension `1+n`.
+Completed:
+
+- A smooth, symmetric, nondegenerate tangent pairing and separation lemmas.
+- Fiber pairing data and separate continuity/smoothness and Lorentzian manifold
+  typeclasses, following Mathlib's Riemannian construction without its distance
+  compatibility condition.
+- Constant metrics and smooth evaluation on vector fields.
+- An index-one Lorentzian metric definition using Mathlib's `sigNeg`.
+- An explicit `(negative, positive)` signature API, with the metric and manifold
+  conditions proved equivalent to signature `(1,n−1)` in total dimension `n`.
+- The Minkowski signature: one negative and `n` positive directions, including
+  `n = 0`, and the resulting smooth Lorentzian metric.
+- Metric-preserving diffeomorphisms, their identity/composition/inverse laws, and
+  the algebraic self-isometry group. Isometries preserve both signature components.
+- Concrete Minkowski translations and time reversal in this group.
 
 Next:
 
-- Relate smoothness of the metric section to smooth evaluation on vector fields.
-- Define the index using Mathlib's `QuadraticForm.sigNeg`. Define Lorentzian metrics
-  by index one, with explicit dimension assumptions for spacetime applications.
-- Compute the Minkowski signature: one negative and `n` positive directions.
 - Develop the metric duality with cotangent spaces and pullback under
   diffeomorphisms. An arbitrary smooth pullback can be degenerate.
 - Prove local constancy of signature, then constancy on connected components.
   Do not assume a disconnected manifold has one global signature automatically.
+- Equip the isometry group with an appropriate topology, then develop its Lie
+  group structure under explicitly stated hypotheses.
 
 Levi-Civita connections, geodesics, and curvature belong to the geometric library,
 but are not prerequisites for a first AQFT net on explicit Minkowski space.
@@ -48,7 +59,10 @@ as separately named conditions.
 
 ## 4. Covariance and vacuum
 
-Construct the proper orthochronous Poincaré group and its action on regions.
+Construct the proper orthochronous Poincaré group and its action on regions. The
+existing full isometry group has no orientation or time-orientation restriction;
+identifying the Minkowski isometry group with the full Poincaré group is also
+future work.
 Specify a strongly continuous unitary representation and covariance by unitary
 conjugation. State a normalized invariant vacuum that is cyclic for the global
 observable algebra; distinguish existence from any additional uniqueness axiom.
