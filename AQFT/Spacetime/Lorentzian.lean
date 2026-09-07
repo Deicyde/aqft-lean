@@ -5,10 +5,11 @@ import AQFT.Spacetime.MinkowskiSignature
 /-!
 # Minkowski space is Lorentzian
 
-The smooth constant Minkowski metric has negative index one and positive signature
-equal to the number of spatial dimensions. Thus it defines a Lorentzian metric.
-Its usual Euclidean topology is Hausdorff and second countable, and its manifold
-model has no boundary.
+The smooth constant metric on `MinkowskiSpace k` has ordered signature $(1,k)$,
+with the negative count first, and total dimension $k+1$. Thus it defines a
+Lorentzian metric. For total dimension $n \geq 1$, use `MinkowskiSpace (n - 1)`;
+its signature is $(1,n-1)$. Its usual Euclidean topology is Hausdorff and second
+countable, and its manifold model has no boundary.
 
 Reference: Christian Bär, Lorentzian Geometry, preface and §1.1:
 https://www.math.uni-potsdam.de/fileadmin/user_upload/Prof-Geometrie/Dokumente/Lehre/Veranstaltungen/WS0405-SS08/LorentzianGeometryEnglish13Jan2020.pdf
@@ -27,6 +28,23 @@ namespace AQFT.Spacetime.MinkowskiSpace
     (metric n).index x = 1 := by
   change sigNeg (quadraticForm n) = 1
   exact quadraticForm_sigNeg n
+
+/-- The Minkowski metric has signature $(1,k)$, ordered as negative then positive. -/
+@[simp] theorem metric_signature (k : ℕ) (x : MinkowskiSpace k) :
+    (metric k).signature x = (1, k) := by
+  change (sigNeg (quadraticForm k), sigPos (quadraticForm k)) = (1, k)
+  simp
+
+/-- Minkowski space with `k` spatial coordinates has total dimension `k + 1`. -/
+@[simp] theorem finrank (k : ℕ) : Module.finrank ℝ (MinkowskiSpace k) = k + 1 := by
+  simp [MinkowskiSpace, Module.finrank_prod, Nat.add_comm]
+
+/-- In total dimension $n \geq 1$, the Minkowski metric has signature $(1,n-1)$. -/
+theorem metric_signature_total_dimension (n : ℕ) (hn : 1 ≤ n)
+    (x : MinkowskiSpace (n - 1)) :
+    Module.finrank ℝ (MinkowskiSpace (n - 1)) = n ∧
+      (metric (n - 1)).signature x = (1, n - 1) := by
+  exact ⟨by rw [finrank, Nat.sub_add_cancel hn], metric_signature (n - 1) x⟩
 
 /-- The constant Minkowski metric is Lorentzian. -/
 theorem metric_isLorentzian (n : ℕ) : (metric n).IsLorentzian := metric_index n

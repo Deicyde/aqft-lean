@@ -30,8 +30,9 @@ Minkowski signature, and the algebraic group of metric-preserving diffeomorphism
 - Negative time squares, positive spatial unit squares, and an explicit nonzero
   null vector in dimension `1+1`.
 - `AQFT.LorentzianMetric`: a smooth metric with negative index one at every point,
-  using Mathlib's `sigNeg`. The positive and negative signatures sum to the model
-  dimension.
+  using Mathlib's `sigNeg`. Its signature is proved to be `(1, n−1)` for total
+  dimension `n`, with the pair ordered as (negative, positive). This signature
+  condition is proved equivalent to the metric and manifold index-one definitions.
 - `MinkowskiSpace.lorentzianMetric n`: Minkowski space as a Lorentzian example,
   with exactly one negative and `n` positive directions.
 - `PseudoRiemannianMetric.Isometry g h`: a diffeomorphism whose derivative preserves
@@ -87,7 +88,11 @@ space supplies its usual topology; the physical metric is a separate, indefinite
 bilinear form. A nonzero vector can have zero metric square.
 
 The general pseudo-Riemannian metric definition imposes no global signature;
-`LorentzianMetric` requires index one everywhere. The metric API permits Mathlib
+`LorentzianMetric` and `IsLorentzianManifold` specialize to signature `(1, n−1)`
+in total dimension `n`. We list negative directions first, consistent with the
+negative time coordinate. `MinkowskiSpace k` uses `k` spatial coordinates, so it has
+total dimension `k+1` and signature `(1,k)`. Isometries preserve both signature
+components. The metric API permits Mathlib
 models with corners. Use a boundaryless model, Hausdorffness, and second countability
 when describing a Lorentzian manifold without boundary. Minkowski space has all
 these properties. The index-one convention also permits dimension one; applications

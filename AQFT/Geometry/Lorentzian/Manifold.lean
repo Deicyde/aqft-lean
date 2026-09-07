@@ -6,7 +6,9 @@ import AQFT.Geometry.Lorentzian.Isometry
 
 The manifold has a fixed indefinite pairing on each tangent fiber. Smoothness is
 recorded by `IsPseudoRiemannianManifold`, as in Mathlib's bundle construction, and
-`IsLorentzianManifold` adds the index-one condition.
+`IsLorentzianManifold` adds the index-one condition. Nondegeneracy makes this
+equivalent to signature $(1,n-1)$ for total model dimension $n$. Signature here
+is ordered as (negative directions, positive directions).
 
 Unlike Mathlib's `IsRiemannianManifold`, this class contains no compatibility with
 an extended distance: an indefinite pairing does not define such a distance.
@@ -51,6 +53,41 @@ noncomputable def ofManifold [PseudoRiemannianBundle (fun x : M ↦ TangentSpace
   isLorentzian := IsLorentzianManifold.index_eq_one
 
 end LorentzianMetric
+
+section Signature
+
+variable [PseudoRiemannianBundle (fun x : M ↦ TangentSpace I x)]
+  [IsPseudoRiemannianManifold I M]
+
+/-- The Lorentzian manifold condition is exactly the pointwise signature $(1,n-1)$. -/
+theorem isLorentzianManifold_iff_signature :
+    IsLorentzianManifold I M ↔
+      ∀ x, (PseudoRiemannianMetric.ofBundle I M).signature x = (1, Module.finrank ℝ E - 1) := by
+  constructor
+  · intro h
+    exact (PseudoRiemannianMetric.ofBundle I M).isLorentzian_iff_signature.mp h.index_eq_one
+  · intro h
+    exact ⟨(PseudoRiemannianMetric.ofBundle I M).isLorentzian_iff_signature.mpr h⟩
+
+/-- The installed Lorentzian tangent pairing has one negative and $n-1$ positive directions. -/
+theorem IsLorentzianManifold.signature_eq [IsLorentzianManifold I M] (x : M) :
+    (PseudoRiemannianMetric.ofBundle I M).signature x = (1, Module.finrank ℝ E - 1) :=
+  (LorentzianMetric.ofManifold I M).signature_eq x
+
+/-- The signature formula directly for the installed pairing on each tangent fiber. -/
+theorem IsLorentzianManifold.pseudoInner_signature [IsLorentzianManifold I M] (x : M) :
+    (sigNeg (pseudoInner (V := TangentSpace I x)).toBilinForm.toQuadraticMap,
+      sigPos (pseudoInner (V := TangentSpace I x)).toBilinForm.toQuadraticMap) =
+        (1, Module.finrank ℝ E - 1) :=
+  IsLorentzianManifold.signature_eq x
+
+/-- The installed signature with the total manifold dimension named explicitly. -/
+theorem IsLorentzianManifold.signature_eq_of_finrank [IsLorentzianManifold I M]
+    {n : ℕ} (hdim : Module.finrank ℝ E = n) (x : M) :
+    (PseudoRiemannianMetric.ofBundle I M).signature x = (1, n - 1) := by
+  simpa only [hdim] using IsLorentzianManifold.signature_eq (I := I) x
+
+end Signature
 
 variable (I M) in
 /-- The isometry group of a manifold with its installed Lorentzian tangent pairings. -/
