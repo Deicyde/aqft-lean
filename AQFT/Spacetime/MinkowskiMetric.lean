@@ -6,7 +6,8 @@ import AQFT.Spacetime.Minkowski
 
 The constant form of signature convention $(-,+,\ldots,+)$ on $\mathbb{R}^{1+n}$
 defines a smooth pseudo-Riemannian metric. The numerical signature calculation
-using Mathlib's quadratic-form API is a subsequent milestone.
+is in `AQFT.Spacetime.MinkowskiSignature`, and `AQFT.Spacetime.Lorentzian`
+packages this as a Lorentzian metric.
 
 ## Reference
 
