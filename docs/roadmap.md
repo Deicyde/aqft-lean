@@ -2,8 +2,8 @@
 
 The project develops a geometric foundation and abstract C*-algebra nets for the
 Haag–Kastler framework. Each step should add complete definitions and proofs,
-with examples that exercise the definitions. A faithful Hilbert-space
-representation is separate data for covariance; states remain future work.
+with examples that exercise the definitions. Covariance acts directly by
+automorphisms of the abstract ambient algebra; states remain future work.
 
 ## 1. Pseudo-Riemannian foundations — started
 
@@ -84,28 +84,35 @@ time-slice, and other additional assumptions as separately named conditions.
 
 ## 4. Isometry covariance and vacuum
 
-Completed: `UnitaryRepresentation G H` records a unitary representation and
-continuity of every vector orbit. No operator-norm continuity is required.
-`IsotoneNet.CovariantRepresentation A g H` supplies a faithful unital star
-representation `π` of the abstract algebra and a strongly continuous unitary
-representation `U` of the full metric self-isometry group. Covariance is equality
-of represented local algebras:
-`π(A(f • O)) = U(f) π(A(O)) U(f)*`.
-`A.IsCovariant g H` asserts the existence of these data. The Hilbert space is
-separate from the definition of the net.
+Completed: `A.IsCovariant g π` requires the chosen operator representation `π`
+to be faithful and asserts the existence of an injective group homomorphism
+`α : g.IsometryGroup →* (B ≃⋆ₐ[ℂ] B)`. In the representation on a complete
+complex Hilbert space, every matrix coefficient of `f ↦ π(α(f)(a))` is continuous.
+The automorphisms transport local
+algebras by `α(f)(A(O)) = A(f • O)`. The representation specifies the weak
+operator topology, while the net and its algebra automorphisms remain abstract.
+Since the locals need not generate `B`, faithfulness is imposed on the action on
+all of `B`.
+
+Completed: weak, strong, and ultraweak continuity of these represented
+automorphism orbits are proved equivalent, giving equivalent covariance axioms.
+The weak and strong definitions agree with Mathlib's operator topologies.
+Ultraweak continuity uses coefficient series from two square-summable vector
+sequences, following Lurie, Lecture 5. The series are proved convergent, and the
+uniform operator bound proves the ultraweak equivalence. No separability or
+operator-norm continuity assumption is imposed.
 
 This uses the full isometry group, including time reversal in Minkowski space.
 It is a stronger symmetry convention than the identity-component covariance
-used by Fewster and Rejzner, §4.1. Orientation-preserving subgroups and
-antiunitary symmetries remain future work. A later positive-energy formulation
-must account for this choice of symmetries.
+used by Fewster and Rejzner, §4.1. Faithfulness is an explicit requirement here.
+Orientation-preserving subgroups and antiunitary symmetries remain future work.
+A later positive-energy formulation must account
+for this choice of symmetries.
 
-Local covariance does not assert an automorphism action on all of the arbitrary
-ambient `B`: that requires an additional normalization or generation hypothesis.
-Next: relate abstract automorphism actions to unitary implementations in GNS
-representations, proving continuity under explicit hypotheses. State a normalized
-invariant vacuum cyclic for the represented observable algebra, and distinguish
-existence from any additional uniqueness axiom.
+Next: construct unitary implementations in GNS representations using suitable
+invariant states. State a normalized invariant vacuum cyclic for the represented
+observable algebra, and distinguish existence from
+any additional uniqueness axiom.
 
 ## 5. Spectrum condition
 

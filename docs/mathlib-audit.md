@@ -38,33 +38,50 @@ not prerequisites for its isotony or causality definitions.
 
 | Area | Existing support | Project use |
 | --- | --- | --- |
-| Unitary operators and conjugation | `LinearIsometryEquiv`, `Unitary.linearIsometryEquiv`, `Unitary.conjStarAlgAut` | Supply unitary group laws and conjugation of represented local algebras. |
+| Algebra automorphisms | `StarAlgEquiv`, `StarAlgEquiv.aut` | Express the symmetry action as a group homomorphism into `B ≃⋆ₐ[ℂ] B`. |
 | Weak operator topology | `ContinuousLinearMapWOT`, written `E →WOT[ℂ] F` | Express weak continuity by matrix coefficients. |
 | Strong operator topology | `PointwiseConvergenceCLM`, written `E →Lₚₜ[ℂ] F` | Express strong continuity by continuity of every orbit map. |
+| Unitary operators and conjugation | `LinearIsometryEquiv`, `Unitary.linearIsometryEquiv`, `Unitary.conjStarAlgAut` | Available for later unitary implementations of algebra automorphisms. |
 | GNS construction | `PositiveLinearMap.GNS`, `gnsStarAlgHom`, `gnsNonUnitalStarAlgHom` | Reuse the Hilbert space and representation induced by a positive functional. |
 | Von Neumann algebras | `WStarAlgebra`, `VonNeumannAlgebra H`, `VonNeumannAlgebra.commutant` | Use for later represented local algebras and their operator commutants. |
 
-For a topological group `G`, `AQFT.UnitaryRepresentation G H` extends a homomorphism
-`G →* (H ≃ₗᵢ[ℂ] H)` with the condition
-`∀ v : H, Continuous (fun g ↦ U g v)`. These are continuous vector orbits, so
-the representation is strongly continuous without requiring operator-norm
-continuity. The Hilbert space belongs to this additional representation data;
-`IsotoneNet M B` remains a net in an abstract C*-algebra.
+Mathlib gives `B ≃⋆ₐ[ℂ] B` its native composition group. Thus a symmetry action
+uses `α : G →* (B ≃⋆ₐ[ℂ] B)`, with faithfulness stated as `Function.Injective α`.
+No `TopologicalSpace` instance on this automorphism group was found in the pinned
+release. Continuity of the action is specified through a faithful representation
+`π : B →⋆ₐ[ℂ] (H →L[ℂ] H)` and the operator topologies below. This representation
+belongs to the covariance data; the net `IsotoneNet M B` remains abstract.
+See [Algebra/Star/StarAlgHom.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Algebra/Star/StarAlgHom.lean).
 
-Mathlib's `Unitary.linearIsometryEquiv` identifies unitary bounded operators with
-linear isometric equivalences as groups. Composing its inverse with
-`Unitary.conjStarAlgAut` defines `UnitaryRepresentation.conjugation`, a group
-homomorphism into star-algebra automorphisms of `H →L[ℂ] H`. It agrees with
-`LinearIsometryEquiv.conjStarAlgEquiv` and sends `T` to `U(g) T U(g)*`.
-The operator formula, multiplication law, and inverse law are proved in
-`AQFT/Representation/Unitary.lean`. See
-[InnerProductSpace/Adjoint.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Analysis/InnerProductSpace/Adjoint.lean)
-and
-[UnitaryStarAlgAut.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Algebra/Star/UnitaryStarAlgAut.lean).
+`AQFT.Automorphism.IsWeaklyContinuous π α` requires continuity of every
+`g ↦ ⟪x, π (α g a) y⟫`. `IsStronglyContinuous π α` requires continuity of every
+`g ↦ π (α g a) y`. The theorem
+`isWeaklyContinuous_iff_isStronglyContinuous` proves their equivalence using
+preservation of multiplication and the adjoint. The squared norm of an orbit is
+a matrix coefficient of `star a * a`. This theorem applies to arbitrary
+topological parameter spaces and does not require faithfulness or group laws.
+The module `AQFT/Representation/Automorphism.lean` also identifies both predicates
+with continuity into Mathlib's corresponding operator spaces. Neither predicate
+requires norm continuity of `g ↦ α g a` or of its represented operator.
+
+The pinned Mathlib has no dedicated ultraweak operator topology in the audited
+analysis and topology modules. `AQFT.Automorphism.IsUltraweaklyContinuous π α`
+uses the usual series tests: for every `a` and square-summable vector sequences
+`xₙ`, `yₙ`, the function `g ↦ ∑ₙ ⟪xₙ, π (α g a) yₙ⟫` is continuous.
+`summable_matrixCoefficient` proves that each test series converges. The module
+`AQFT/Representation/Ultraweak.lean` proves equivalence with both weak and strong
+continuity. Each orbit has the uniform operator bound `‖π (α g a)‖ ≤ ‖a‖`, using
+`NonUnitalStarAlgHom.norm_apply_le` and `StarAlgEquiv.norm_map`; Mathlib's
+`continuous_tsum` then proves continuity of the series. No Hilbert-space
+separability is assumed. This supplies the series-test formulation without
+constructing a predual or identifying its weak-star topology. See
+[Lurie's ultraweak series tests, Lecture 5, page 3](https://www.math.ias.edu/~lurie/261ynotes/lecture5.pdf),
+[CStarAlgebra/Spectrum.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Analysis/CStarAlgebra/Spectrum.lean)
+and [Normed/Group/FunctionSeries.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Analysis/Normed/Group/FunctionSeries.lean).
 
 Mathlib's `ContRepresentation` does not impose continuity in the group
 variable. It bundles a homomorphism into continuous linear maps, so it cannot
-replace the vector-orbit condition above. See
+replace the continuity conditions above. See
 [RepresentationTheory/Continuous/Basic.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/RepresentationTheory/Continuous/Basic.lean).
 
 For Hilbert-space-valued operators,
@@ -86,7 +103,7 @@ For strong continuity, use
 `ContinuousLinearMap.toPointwiseConvergenceCLM` supplies the continuous map from
 the usual operator topology. On Hilbert spaces this is the strong operator
 topology. Continuity into the usual `H →L[ℂ] H` instead uses the operator norm and
-would impose a stronger requirement on a unitary representation. See
+would impose a stronger requirement on the represented algebra action. See
 [PointwiseConvergenceCLM.lean](https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/Topology/Algebra/Module/Spaces/PointwiseConvergenceCLM.lean).
 
 For `[CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]` and
@@ -156,6 +173,6 @@ to give model vector spaces their topology.
 
 The checked dependencies of `PositiveLinearMap.gnsStarAlgHom`,
 `ContinuousLinearMapWOT.continuous_iff`, `VonNeumannAlgebra.commutant_commutant`,
-and the project's unitary representation instances and conjugation declarations
+and the project's equivalences of weak, strong, and ultraweak automorphism continuity
 use only `propext`, `Classical.choice`, and `Quot.sound`, as reported by
 `#print axioms`.
