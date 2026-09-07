@@ -83,6 +83,9 @@ abbrev Isometry (g : LorentzianMetric I M) (h : LorentzianMetric J N) :=
 /-- The algebraic group of all self-isometries of a Lorentzian metric. -/
 abbrev IsometryGroup (g : LorentzianMetric I M) := Isometry g g
 
+variable (g : LorentzianMetric I M)
+#synth Group (Isometry g g)
+
 end LorentzianMetric
 
 end AQFT
