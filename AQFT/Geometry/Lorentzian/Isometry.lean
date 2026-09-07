@@ -6,8 +6,8 @@ import Mathlib.Geometry.Manifold.LocalDiffeomorph
 # Lorentzian isometries
 
 The differential of a metric isometry gives an equivalence of tangent quadratic
-forms. The negative index is therefore invariant under isometries. In particular,
-being Lorentzian is preserved by an isometry.
+forms. The ordered signature `(negative, positive)` is therefore invariant under
+isometries. In particular, being Lorentzian is preserved by an isometry.
 
 Lorentzian self-isometries inherit the algebraic group structure of
 pseudo-Riemannian self-isometries. No time orientation is imposed.
@@ -52,6 +52,12 @@ theorem tangentQuadraticIsometry_apply (f : Isometry g h) (x : M)
 /-- Metric isometries preserve the negative index at corresponding points. -/
 theorem index_eq (f : Isometry g h) (x : M) : g.index x = h.index (f x) :=
   QuadraticMap.Equivalent.sigNeg_eq ⟨f.tangentQuadraticIsometry x⟩
+
+/-- Metric isometries preserve the ordered negative and positive signature pair. -/
+theorem signature_eq (f : Isometry g h) (x : M) : g.signature x = h.signature (f x) :=
+  Prod.ext
+    (QuadraticMap.Equivalent.sigNeg_eq ⟨f.tangentQuadraticIsometry x⟩)
+    (QuadraticMap.Equivalent.sigPos_eq ⟨f.tangentQuadraticIsometry x⟩)
 
 /-- A metric is Lorentzian if and only if an isometric metric is Lorentzian. -/
 theorem isLorentzian_iff (f : Isometry g h) : g.IsLorentzian ↔ h.IsLorentzian := by

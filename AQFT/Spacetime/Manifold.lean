@@ -6,8 +6,9 @@ import AQFT.Spacetime.Lorentzian
 
 The constant Minkowski metric installs indefinite pairings on the tangent fibers.
 Their smoothness and negative index one provide the manifold typeclasses, following
-Mathlib's Riemannian bundle construction. The auxiliary Euclidean norm and inner
-product remain available separately.
+Mathlib's Riemannian bundle construction. With `k` spatial coordinates, the installed
+metric has signature $(1,k)$, ordered as negative then positive. The auxiliary
+Euclidean norm and inner product remain available separately.
 -/
 
 open Manifold Bundle
@@ -29,6 +30,13 @@ instance (n : ℕ) : IsPseudoRiemannianManifold 𝓘(ℝ, MinkowskiSpace n) (Min
 /-- Minkowski space is a Lorentzian manifold with its installed tangent pairings. -/
 instance (n : ℕ) : IsLorentzianManifold 𝓘(ℝ, MinkowskiSpace n) (MinkowskiSpace n) :=
   ⟨metric_index n⟩
+
+/-- The installed Minkowski tangent pairings have ordered signature $(1,k)$. -/
+@[simp] theorem ofBundle_signature (k : ℕ) (x : MinkowskiSpace k) :
+    (PseudoRiemannianMetric.ofBundle 𝓘(ℝ, MinkowskiSpace k) (MinkowskiSpace k)).signature x =
+      (1, k) := by
+  change (metric k).signature x = (1, k)
+  exact metric_signature k x
 
 /-- The installed tangent pairing is the Minkowski bilinear form. -/
 @[simp] theorem pseudoInner_apply (n : ℕ) (x : MinkowskiSpace n)
