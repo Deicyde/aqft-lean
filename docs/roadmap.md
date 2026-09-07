@@ -41,16 +41,19 @@ explicitly which predicates exclude zero; the closed future cone includes zero.
 Define separation using differences of points and prove invariance under
 translations and the relevant Lorentz transformations.
 
-Define bounded open regions using the existing Euclidean topology and bornology.
-Record whether additional restrictions such as nonemptiness, causal convexity, or
-double-cone shape are imposed. Prove the inclusion order and spacelike separation
-properties needed by nets.
+Completed: open bounded regions using the existing product topology and bornology,
+with the inclusion order and finite unions. The empty set is included; no causal
+convexity or double-cone restriction is imposed. Spacelike separation of regions
+remains to be defined.
 
 ## 3. Local algebras and nets
 
-Reuse `VonNeumannAlgebra H` for local algebras acting on one complex Hilbert space.
-Define a net indexed by the chosen regions. State isotony as monotonicity and
-locality as pairwise commutation at spacelike separation.
+Completed: `IsotoneNet n H` uses Mathlib's `OrderHom` to assign
+`VonNeumannAlgebra H` values to open bounded regions on one complex Hilbert space.
+Isotony is stated as operator-set inclusion, and the local algebras form a directed
+family. No algebra value is prescribed for the empty region.
+
+Next: state locality as pairwise commutation at spacelike separation.
 
 Keep abstract C*-algebra nets and concrete von Neumann nets as distinct
 formulations. Connecting them through a state and GNS representation requires
