@@ -29,7 +29,7 @@ class IsLorentzianManifold (I : ModelWithCorners ℝ E H) (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M] [FiniteDimensional ℝ E]
     [IsManifold I ∞ M] [PseudoRiemannianBundle (fun x : M ↦ TangentSpace I x)]
     [IsPseudoRiemannianManifold I M] : Prop where
-  index_eq_one (x : M) : (PseudoRiemannianMetric.ofBundle I M).index x = 1
+  sigNeg_eq_one : (PseudoRiemannianMetric.ofBundle I M).IsLorentzian
 
 variable {I : ModelWithCorners ℝ E H} {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
@@ -43,14 +43,14 @@ instance (g : LorentzianMetric I M) :
     IsLorentzianManifold I M := by
   let : PseudoRiemannianBundle (fun x : M ↦ TangentSpace I x) :=
     g.toPseudoRiemannianMetric.toBundle
-  exact ⟨fun x ↦ g.index_eq_one x⟩
+  exact ⟨fun x ↦ g.sigNeg_eq_one x⟩
 
 variable (I M) in
 /-- Recover a Lorentzian metric from the installed fiber structures and their properties. -/
 noncomputable def ofManifold [PseudoRiemannianBundle (fun x : M ↦ TangentSpace I x)]
     [IsPseudoRiemannianManifold I M] [IsLorentzianManifold I M] : LorentzianMetric I M where
   toPseudoRiemannianMetric := PseudoRiemannianMetric.ofBundle I M
-  isLorentzian := IsLorentzianManifold.index_eq_one
+  isLorentzian := IsLorentzianManifold.sigNeg_eq_one
 
 end LorentzianMetric
 
@@ -62,16 +62,18 @@ variable [PseudoRiemannianBundle (fun x : M ↦ TangentSpace I x)]
 /-- The Lorentzian manifold condition is exactly the pointwise signature $(1,n-1)$. -/
 theorem isLorentzianManifold_iff_signature :
     IsLorentzianManifold I M ↔
-      ∀ x, (PseudoRiemannianMetric.ofBundle I M).signature x = (1, Module.finrank ℝ E - 1) := by
+      ∀ x, let Q := (PseudoRiemannianMetric.ofBundle I M).quadraticForm x
+        (sigNeg Q, sigPos Q) = (1, Module.finrank ℝ E - 1) := by
   constructor
   · intro h
-    exact (PseudoRiemannianMetric.ofBundle I M).isLorentzian_iff_signature.mp h.index_eq_one
+    exact (PseudoRiemannianMetric.ofBundle I M).isLorentzian_iff_signature.mp h.sigNeg_eq_one
   · intro h
     exact ⟨(PseudoRiemannianMetric.ofBundle I M).isLorentzian_iff_signature.mpr h⟩
 
 /-- The installed Lorentzian tangent pairing has one negative and $n-1$ positive directions. -/
 theorem IsLorentzianManifold.signature_eq [IsLorentzianManifold I M] (x : M) :
-    (PseudoRiemannianMetric.ofBundle I M).signature x = (1, Module.finrank ℝ E - 1) :=
+    let Q := (PseudoRiemannianMetric.ofBundle I M).quadraticForm x
+    (sigNeg Q, sigPos Q) = (1, Module.finrank ℝ E - 1) :=
   (LorentzianMetric.ofManifold I M).signature_eq x
 
 /-- The signature formula directly for the installed pairing on each tangent fiber. -/
@@ -84,7 +86,8 @@ theorem IsLorentzianManifold.pseudoInner_signature [IsLorentzianManifold I M] (x
 /-- The installed signature with the total manifold dimension named explicitly. -/
 theorem IsLorentzianManifold.signature_eq_of_finrank [IsLorentzianManifold I M]
     {n : ℕ} (hdim : Module.finrank ℝ E = n) (x : M) :
-    (PseudoRiemannianMetric.ofBundle I M).signature x = (1, n - 1) := by
+    let Q := (PseudoRiemannianMetric.ofBundle I M).quadraticForm x
+    (sigNeg Q, sigPos Q) = (1, n - 1) := by
   simpa only [hdim] using IsLorentzianManifold.signature_eq (I := I) x
 
 end Signature
